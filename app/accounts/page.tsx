@@ -2,7 +2,7 @@
 
 import NoProgramFound from "@/components/no-program";
 import { useAccountData } from "@/hooks/useAccountData";
-import { useProgramStore } from "@/lib/stores/program-store";
+import useProgramStore from "@/lib/stores/program-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 

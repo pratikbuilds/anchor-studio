@@ -1,7 +1,6 @@
 "use client";
 
-import {
-  useProgramStore,
+import useProgramStore, {
   type ProgramDetails as ProgramDetailsType,
 } from "@/lib/stores/program-store";
 import { Badge } from "@/components/ui/badge";

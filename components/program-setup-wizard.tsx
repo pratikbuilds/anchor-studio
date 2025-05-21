@@ -1,23 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useJsonStore } from "@/lib/store";
-import { useProgramStore } from "@/lib/stores/program-store";
+import useProgramStore, { type ProgramDetails as ProgramDetailsType } from "@/lib/stores/program-store";
 import { useRpcStore } from "@/lib/stores/rpc-store";
 import { useAnchorWallet } from "@jup-ag/wallet-adapter";
 import { toast } from "sonner";
 import { JsonEditor } from "@/components/json-editor";
 import { ProgramDetails } from "@/components/program-details";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   UploadIcon,
   CodeIcon,
@@ -38,15 +29,27 @@ interface Step {
   icon: React.ReactNode;
 }
 
-export function ProgramSetupWizard() {
+interface ProgramSetupWizardProps {
+  onComplete?: () => void;
+}
+
+export function ProgramSetupWizard({ onComplete }: ProgramSetupWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [activeTab, setActiveTab] = useState<"upload" | "editor">("editor");
+
+  // Get JSON store actions
+  const { reset: resetJsonStore } = useJsonStore();
 
   const { jsonData, isValid, setJsonData } = useJsonStore();
   const { initialize, isInitialized, error, programDetails } =
     useProgramStore();
   const { getCurrentRpcUrl, getCurrentRpcDisplayName } = useRpcStore();
   const wallet = useAnchorWallet();
+
+  // Reset JSON store when component mounts
+  useEffect(() => {
+    resetJsonStore();
+  }, [resetJsonStore]);
 
   const steps: Step[] = [
     {
@@ -155,9 +158,17 @@ export function ProgramSetupWizard() {
 
       toast.success("Program initialized successfully", {
         id: "add-program",
-        description: "The program is now ready to use.",
-        duration: 3000,
+        description: "Your program has been initialized and is ready to use.",
+        duration: 5000,
       });
+
+      // Reset JSON store after successful initialization
+      resetJsonStore();
+
+      // Call onComplete callback if provided
+      if (onComplete) {
+        onComplete();
+      }
 
       // Move to the next step after successful initialization
       setCurrentStep(2);

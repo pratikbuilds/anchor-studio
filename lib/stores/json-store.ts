@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 /**
  * JSON state interface
@@ -12,24 +11,19 @@ export interface JsonState {
   // Actions
   setJsonData: (data: string) => void;
   setIsValid: (valid: boolean) => void;
+  reset: () => void;
 }
 
 /**
- * JSON store with persistence
+ * JSON store without persistence to avoid keeping old IDL data
  */
-export const useJsonStore = create<JsonState>()(
-  persist(
-    (set) => ({
-      // Initial state
-      jsonData: "",
-      isValid: true,
-      
-      // Actions
-      setJsonData: (data) => set({ jsonData: data }),
-      setIsValid: (valid) => set({ isValid: valid }),
-    }),
-    {
-      name: "json-storage",
-    }
-  )
-);
+export const useJsonStore = create<JsonState>()((set) => ({
+  // Initial state
+  jsonData: "",
+  isValid: true,
+  
+  // Actions
+  setJsonData: (data) => set({ jsonData: data }),
+  setIsValid: (valid) => set({ isValid: valid }),
+  reset: () => set({ jsonData: "", isValid: true }),
+}));

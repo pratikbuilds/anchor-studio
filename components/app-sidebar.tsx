@@ -157,9 +157,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/" className="flex items-center gap-3">
-                <img 
-                  src="/Logo.png" 
-                  alt="Anchor Studio Logo" 
+                <img
+                  src="/Logo.png"
+                  alt="Anchor Studio Logo"
                   className="h-12 w-12 object-contain"
                 />
                 <span className="text-lg font-semibold">Anchor Studio</span>
