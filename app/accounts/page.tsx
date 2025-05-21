@@ -1,26 +1,16 @@
 "use client";
 
+import NoProgramFound from "@/components/no-program";
+import { useAccountData } from "@/hooks/useAccountData";
 import { useProgramStore } from "@/lib/stores/program-store";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
 
 export default function AccountsPage() {
   const programStoreState = useProgramStore((state) => state);
-
-  // useEffect(() => {
-  //   console.log(
-  //     "[AccountsPage] Mounted. Current program store state:",
-  //     programStoreState
-  //   );
-  //   console.log("[AccountsPage] Program instance:", programStoreState.program);
-  //   console.log(
-  //     "[AccountsPage] Program accounts:",
-  //     programStoreState.program?.account
-  //   );
-  // }, [programStoreState]);
-
   const { program, isInitialized, error } = programStoreState;
-  const [accountData, setAccountData] = useState<Record<string, any> | null>(
-    null
+  const [activeTab, setActiveTab] = useState(
+    program?.idl?.accounts?.[0]?.name ?? ""
   );
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -42,32 +32,57 @@ export default function AccountsPage() {
   }
 
   const accountNames = program.idl.accounts?.map((acc) => acc.name) || [];
-
+  const typedAccountName = accountNames[0] as keyof typeof program.account;
+  const {
+    data,
+    isLoading: accountDataLoading,
+    error: accountDataError,
+  } = useAccountData(program, typedAccountName);
+  console.log("data", data);
+  if (error) {
+    return (
+      <div className="p-6 text-center text-red-600 dark:text-red-400">
+        <h2 className="text-xl font-semibold">Error Initializing Program</h2>
+        <p>{error}</p>
+        <p className="mt-2 text-sm text-gray-500">
+          Please check your program ID and network settings on the main page.
+        </p>
+      </div>
+    );
+  }
+  if (
+    !program ||
+    !program.idl ||
+    !program.idl.accounts ||
+    program.idl.accounts.length === 0
+  ) {
+    return <NoProgramFound />;
+  }
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Program Accounts</h1>
-      {isLoading ? (
-        <div className="p-4 text-gray-600">Loading account data...</div>
-      ) : fetchError ? (
-        <div className="p-4 text-red-500">Error: {fetchError}</div>
-      ) : accountData ? (
-        <div className="space-y-4">
-          <h2 className="text-xl font-medium">Account: {accountNames[0]}</h2>
-          <pre className="p-4 bg-gray-100 rounded-md overflow-auto">
-            {JSON.stringify(accountData, null, 2)}
-          </pre>
-        </div>
-      ) : accountNames.length > 0 ? (
-        <ul className="space-y-2">
-          {accountNames.map((name) => (
-            <li key={name} className="p-3 border rounded-md hover:bg-gray-50">
-              {name}
-            </li>
+      <div className="py-3 px-4 md:px-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap lg:w-auto gap-1">
+            {program.idl.accounts.map((account) => (
+              <TabsTrigger
+                key={account.name}
+                value={account.name}
+                className="capitalize text-sm px-3 py-1.5"
+              >
+                {account.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {program.idl.accounts.map((account) => (
+            <TabsContent
+              key={account.name}
+              value={account.name}
+              className="mt-1"
+            ></TabsContent>
           ))}
-        </ul>
-      ) : (
-        <p>No accounts defined in the IDL or program not fully loaded.</p>
-      )}
+        </Tabs>
+      </div>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function Page() {
   const program = useProgramStore((state) => state.program);
   const { getCurrentRpcUrl } = useRpcStore();
   const wallet = useAnchorWallet();
-  console.log("isInitialized", isInitialized);
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -211,7 +211,7 @@ export default function Page() {
                   </button>
                 </div>
               </div>
-              <div className="relative mt-2 w-full">
+              <div className="relative mt-2 w-full ">
                 <JsonEditor />
               </div>
               <div className="flex justify-end">

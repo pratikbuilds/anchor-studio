@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 /**
  * RPC endpoint options and types
  */
-export type RpcOption = "mainnet-beta" | "devnet" | "testnet" | "custom";
+export type RpcOption = "mainnet-beta" | "devnet" | "localnet" | "custom";
 
 export interface RpcEndpoint {
   value: RpcOption;
@@ -16,9 +16,13 @@ export interface RpcEndpoint {
  * Available RPC endpoints
  */
 export const RPC_OPTIONS: ReadonlyArray<RpcEndpoint> = [
-  { value: "mainnet-beta", label: "Mainnet Beta", url: "https://api.mainnet-beta.solana.com" },
+  {
+    value: "mainnet-beta",
+    label: "Mainnet Beta",
+    url: "https://api.mainnet-beta.solana.com",
+  },
   { value: "devnet", label: "Devnet", url: "https://api.devnet.solana.com" },
-  { value: "testnet", label: "Testnet", url: "https://api.testnet.solana.com" },
+  { value: "localnet", label: "localnet", url: "http://127.0.0.1:8899" },
 ] as const;
 
 /**
@@ -29,12 +33,12 @@ export interface RpcState {
   readonly selectedRpc: RpcOption;
   readonly customRpcUrl: string;
   readonly dropdownOpen: boolean;
-  
+
   // Actions
   setSelectedRpc: (rpc: RpcOption) => void;
   setCustomRpcUrl: (url: string) => void;
   setDropdownOpen: (isOpen: boolean) => void;
-  
+
   // Computed getters
   getCurrentRpcUrl: () => string;
   getCurrentRpcDisplayName: () => string;
@@ -47,22 +51,24 @@ export const useRpcStore = create<RpcState>()(
   persist(
     (set, get) => ({
       // Initial state
-      selectedRpc: "mainnet-beta",
+      selectedRpc: "localnet",
       customRpcUrl: "",
       dropdownOpen: false,
-      
+
       // Actions
       setSelectedRpc: (rpc) => set({ selectedRpc: rpc }),
       setCustomRpcUrl: (url) => set({ customRpcUrl: url }),
       setDropdownOpen: (isOpen) => set({ dropdownOpen: isOpen }),
-      
+
       // Computed values
       getCurrentRpcUrl: () => {
         const { selectedRpc, customRpcUrl } = get();
         if (selectedRpc === "custom" && customRpcUrl) {
           return customRpcUrl;
         }
-        const selectedOption = RPC_OPTIONS.find(opt => opt.value === selectedRpc);
+        const selectedOption = RPC_OPTIONS.find(
+          (opt) => opt.value === selectedRpc
+        );
         return selectedOption?.url || RPC_OPTIONS[0].url!;
       },
       getCurrentRpcDisplayName: () => {
@@ -70,7 +76,10 @@ export const useRpcStore = create<RpcState>()(
         if (selectedRpc === "custom") {
           return customRpcUrl ? "Custom" : "Select RPC";
         }
-        return RPC_OPTIONS.find(opt => opt.value === selectedRpc)?.label || "Select RPC";
+        return (
+          RPC_OPTIONS.find((opt) => opt.value === selectedRpc)?.label ||
+          "Select RPC"
+        );
       },
     }),
     {

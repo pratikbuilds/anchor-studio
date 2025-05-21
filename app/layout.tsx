@@ -11,6 +11,7 @@ import { WalletProvider } from "@/providers/wallet-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Layout } from "@/layout";
+import { QueryProvider } from "@/providers/query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +33,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <WalletProvider>
-          <ThemeProvider>
-            <Layout>{children}</Layout>
-          </ThemeProvider>
-        </WalletProvider>
+        <QueryProvider>
+          <WalletProvider>
+            <ThemeProvider>
+              <Layout>{children}</Layout>
+            </ThemeProvider>
+          </WalletProvider>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -91,7 +91,7 @@ export function JsonEditor({ onChange }: JsonEditorProps) {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[400px] w-full resize-none rounded-md border-0 bg-transparent p-4 font-mono text-sm shadow-none focus-visible:outline-none focus-visible:ring-0"
+          className="min-h-[700px] w-full resize-none rounded-md border-0 bg-transparent p-4 font-mono text-sm shadow-none focus-visible:outline-none focus-visible:ring-0"
           style={{
             fontFamily: "monospace",
             lineHeight: "1.5",
