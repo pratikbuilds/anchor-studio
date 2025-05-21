@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Program, Idl, AnchorProvider } from "@coral-xyz/anchor";
-import { Connection, PublicKey, Commitment } from "@solana/web3.js";
+import { Connection, PublicKey, Commitment, Cluster } from "@solana/web3.js";
 import { AnchorWallet } from "@jup-ag/wallet-adapter";
 
 /**
@@ -12,6 +12,24 @@ type AnyProgram = Program<Idl>;
  * Type for Solana commitment level
  */
 type CommitmentLevel = "processed" | "confirmed" | "finalized";
+
+/**
+ * Interface for program details
+ */
+export interface ProgramDetails {
+  // Program ID as string
+  programId: string;
+  // Program name from IDL
+  name: string;
+  // RPC URL being used
+  rpcUrl: string;
+  // Network cluster (mainnet-beta, devnet, etc.)
+  cluster: Cluster | string;
+  // Commitment level
+  commitment: CommitmentLevel;
+  // Timestamp when program was initialized
+  initializedAt: number;
+}
 
 /**
  * Interface for the program store state
@@ -31,6 +49,9 @@ interface ProgramState {
 
   // Any error that occurred during initialization
   error: Error | null;
+  
+  // Detailed information about the initialized program
+  programDetails: ProgramDetails | null;
 
   /**
    * Initialize the program with the given IDL and connection details
@@ -71,6 +92,7 @@ export const useProgramStore = create<ProgramState>((set, get) => ({
   connection: null,
   isInitialized: false,
   error: null,
+  programDetails: null,
 
   initialize: async (
     idl: Idl,
@@ -105,6 +127,26 @@ export const useProgramStore = create<ProgramState>((set, get) => ({
 
       const program = new Program(idl, provider);
       console.log("[program-store] Program instance created:", program?.programId?.toString());
+      
+      // Determine cluster from RPC URL
+      let cluster: Cluster | string = "custom";
+      if (rpcUrl.includes("mainnet-beta")) {
+        cluster = "mainnet-beta";
+      } else if (rpcUrl.includes("devnet")) {
+        cluster = "devnet";
+      } else if (rpcUrl.includes("127.0.0.1") || rpcUrl.includes("localhost")) {
+        cluster = "localnet";
+      }
+      
+      // Create program details object
+      const programDetails: ProgramDetails = {
+        programId: program.programId.toString(),
+        name: idl.metadata?.name || "Unknown Program",
+        rpcUrl,
+        cluster,
+        commitment,
+        initializedAt: Date.now(),
+      };
 
       // Update state
       set({
@@ -113,6 +155,7 @@ export const useProgramStore = create<ProgramState>((set, get) => ({
         connection,
         isInitialized: true,
         error: null,
+        programDetails,
       });
       console.log("[program-store] State after set:", get());
 
@@ -131,6 +174,7 @@ export const useProgramStore = create<ProgramState>((set, get) => ({
         program: null,
         provider: null,
         connection: null,
+        programDetails: null,
       });
 
       throw errorObj;
@@ -145,6 +189,7 @@ export const useProgramStore = create<ProgramState>((set, get) => ({
       connection: null,
       isInitialized: false,
       error: null,
+      programDetails: null,
     });
   },
 }));

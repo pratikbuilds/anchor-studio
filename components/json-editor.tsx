@@ -84,18 +84,21 @@ export function JsonEditor({ onChange }: JsonEditorProps) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="relative rounded-md border bg-background shadow-sm">
+    <div className="flex flex-col h-full w-full">
+      <div className="relative h-full w-full">
         <textarea
           ref={textareaRef}
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[700px] w-full resize-none rounded-md border-0 bg-transparent p-4 font-mono text-sm shadow-none focus-visible:outline-none focus-visible:ring-0"
+          className="h-full w-full resize-none rounded-md border-0 bg-transparent p-4 font-mono text-sm shadow-none focus-visible:outline-none focus-visible:ring-0"
           style={{
             fontFamily: "monospace",
             lineHeight: "1.5",
             tabSize: 2,
+            height: "100%",
+            width: "100%",
+            boxSizing: "border-box"
           }}
           placeholder="Enter JSON here..."
           spellCheck="false"
