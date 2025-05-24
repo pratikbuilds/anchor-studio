@@ -130,14 +130,15 @@ function getClusterFromRpcUrl(rpcUrl: string): Cluster | string {
   if (rpcUrl.includes("devnet")) return "devnet";
   if (rpcUrl.includes("testnet")) return "testnet";
   if (rpcUrl.includes("mainnet")) return "mainnet-beta";
-  if (rpcUrl.includes("localhost") || rpcUrl.includes("127.0.0.1")) return "localnet";
+  if (rpcUrl.includes("localhost") || rpcUrl.includes("127.0.0.1"))
+    return "localnet";
   return "custom";
 }
 
 /**
  * Type for the persisted state
  */
-type PersistedState = Pick<ProgramState, 'programDetails' | 'isInitialized'>;
+type PersistedState = Pick<ProgramState, "programDetails" | "isInitialized">;
 
 /**
  * Create the program store with a single program instance
@@ -171,7 +172,6 @@ const useProgramStore = create<ProgramState>()(
 
           // Create connection
           const connection = new Connection(rpcUrl, {
-            commitment,
             ...DEFAULT_CONNECTION_CONFIG,
           });
 
@@ -244,10 +244,11 @@ const useProgramStore = create<ProgramState>()(
     }),
     {
       name: "anchor-studio-program",
-      partialize: (state) => ({
-        programDetails: state.programDetails,
-        isInitialized: state.isInitialized
-      } as PersistedState),
+      partialize: (state) =>
+        ({
+          programDetails: state.programDetails,
+          isInitialized: state.isInitialized,
+        } as PersistedState),
     }
   )
 );

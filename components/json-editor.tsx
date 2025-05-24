@@ -85,7 +85,7 @@ export function JsonEditor({ onChange }: JsonEditorProps) {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="relative h-full w-full">
+      <div className="relative flex-1 w-full ">
         <textarea
           ref={textareaRef}
           value={code}
@@ -98,7 +98,7 @@ export function JsonEditor({ onChange }: JsonEditorProps) {
             tabSize: 2,
             height: "100%",
             width: "100%",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
           placeholder="Enter JSON here..."
           spellCheck="false"
