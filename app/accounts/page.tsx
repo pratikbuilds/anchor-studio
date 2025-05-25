@@ -5,7 +5,7 @@ import { useAccountData } from "@/hooks/useAccountData";
 import useProgramStore from "@/lib/stores/program-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import AccountTable from "@/components/account-table";
+import { AccountData, AccountTable } from "@/components/account-table";
 
 export default function AccountsPage() {
   const programStoreState = useProgramStore((state) => state);
@@ -36,12 +36,21 @@ export default function AccountsPage() {
 
   const accountNames = program.idl.accounts?.map((acc) => acc.name) || [];
   const typedAccountName = accountNames[0] as keyof typeof program.account;
+  const accountType = program.idl.types?.find(
+    (type) => type.name === typedAccountName
+  );
+  console.log("accountType", accountType);
   const {
     data,
     isLoading: accountDataLoading,
     error: accountDataError,
   } = useAccountData(program, typedAccountName);
   console.log("data", data);
+  const transformedData: AccountData[] =
+    data?.map((item) => ({
+      publicKey: item.publicKey.toString(),
+      account: item.account,
+    })) || [];
   if (error) {
     return (
       <div className="p-6 text-center text-red-600 dark:text-red-400">
@@ -83,7 +92,7 @@ export default function AccountsPage() {
               value={account.name}
               className="mt-1"
             >
-              <AccountTable />
+              <AccountTable data={transformedData} accountType={accountType} />
             </TabsContent>
           ))}
         </Tabs>
