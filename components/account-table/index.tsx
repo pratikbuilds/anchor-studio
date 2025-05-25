@@ -221,27 +221,33 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="relative max-w-md">
-        <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder={`Search ${accountType?.name || "accounts"}...`}
-          className="pl-9 rounded-lg bg-muted/60 border border-border focus:border-primary shadow-sm"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          style={{ minWidth: 220 }}
-        />
+    <div className="flex flex-col">
+      {/* Search and table info header */}
+      <div className="px-6 py-4 flex items-center justify-between border-b">
+        <div className="relative w-full max-w-sm">
+          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={`Search ${accountType?.name || 'accounts'}...`}
+            className="pl-9 h-9 w-full bg-background border-muted"
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+          />
+        </div>
+        <div className="text-sm text-muted-foreground">
+          {table.getFilteredRowModel().rows.length} accounts
+        </div>
       </div>
 
-      <div className="rounded-md border">
+      {/* Table */}
+      <div className="w-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-muted/50">
+              <TableRow key={headerGroup.id} className="border-b bg-muted/20 hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="relative h-10 border-t select-none"
+                    className="h-10 px-4 text-xs font-medium text-muted-foreground select-none"
                     aria-sort={
                       header.column.getIsSorted() === "asc"
                         ? "ascending"
@@ -253,8 +259,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
                         className={cn(
-                          header.column.getCanSort() &&
-                            "flex h-full cursor-pointer items-center justify-between gap-2 select-none"
+                          "flex h-full cursor-pointer items-center gap-1 select-none"
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={(e) => {
@@ -275,21 +280,17 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
                         {{
                           asc: (
                             <ChevronUpIcon
-                              className="shrink-0 opacity-60"
-                              size={16}
+                              className="ml-1 h-3.5 w-3.5 shrink-0 text-foreground"
                               aria-hidden="true"
                             />
                           ),
                           desc: (
                             <ChevronDownIcon
-                              className="shrink-0 opacity-60"
-                              size={16}
+                              className="ml-1 h-3.5 w-3.5 shrink-0 text-foreground"
                               aria-hidden="true"
                             />
                           ),
-                        }[header.column.getIsSorted() as string] ?? (
-                          <span className="size-4" aria-hidden="true" />
-                        )}
+                        }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     ) : (
                       flexRender(
@@ -308,10 +309,10 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="group hover:bg-muted/50 transition-colors"
+                  className="border-b hover:bg-muted/30"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="px-4 py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -324,24 +325,27 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-muted-foreground"
                 >
-                  No accounts found.
+                  No accounts found
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-between border-t px-4 py-3">
+      </div>
+
+      {/* Pagination */}
+      {table.getPageCount() > 1 && (
+        <div className="flex items-center justify-between px-6 py-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {table.getFilteredRowModel().rows.length} total items • Page{" "}
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
@@ -350,6 +354,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
             </Button>
             <Button
               variant="outline"
+              size="sm"
               className="h-8 w-8 p-0"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
@@ -359,6 +364,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
             </Button>
             <Button
               variant="outline"
+              size="sm"
               className="h-8 w-8 p-0"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
@@ -368,7 +374,8 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
@@ -377,7 +384,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
             </Button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
