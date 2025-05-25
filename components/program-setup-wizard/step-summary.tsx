@@ -28,6 +28,11 @@ export default function StepSummary({
   const { jsonData, isValid, reset: resetJsonStore } = useJsonStore();
   const { initialize, isInitialized, error, programDetails } =
     useProgramStore();
+
+  console.log("error", error);
+  console.log("isInitialized", isInitialized);
+  console.log("programDetails", programDetails);
+
   const { getCurrentRpcUrl, getCurrentRpcDisplayName } = useRpcStore();
   const wallet = useAnchorWallet();
 
@@ -132,7 +137,6 @@ export default function StepSummary({
           <ProgramDetails
             programDetails={programDetails}
             onReinitialize={() => {}}
-            onEdit={() => {}}
           />
 
           <div className="overflow-hidden rounded-lg border bg-card/50 shadow-sm">
@@ -198,42 +202,6 @@ export default function StepSummary({
               className="min-w-[150px]"
             >
               Go to Dashboard
-            </AnimatedButton>
-          </div>
-        </div>
-      ) : error ? (
-        <div className="overflow-hidden rounded-lg border border-red-200 bg-red-50 shadow-sm dark:border-red-900/30 dark:bg-red-900/10">
-          <div className="border-b border-red-200 bg-red-100/30 px-6 py-4 dark:border-red-900/20 dark:bg-red-900/20">
-            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <h3 className="text-lg font-medium">Initialization Failed</h3>
-            </div>
-          </div>
-          <div className="p-6">
-            <div className="mb-4 text-sm text-red-600 dark:text-red-400">
-              {error.message}
-            </div>
-            <AnimatedButton
-              variant="outline"
-              onClick={onBack}
-              direction="backward"
-              className="min-w-[100px]"
-            >
-              Go Back
             </AnimatedButton>
           </div>
         </div>

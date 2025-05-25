@@ -12,6 +12,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Layout } from "@/layout";
 import { QueryProvider } from "@/providers/query-provider";
+import { ProgramInitializer } from "@/components/program-initializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <QueryProvider>
           <WalletProvider>
+            <ProgramInitializer />
             <ThemeProvider>
               <Layout>{children}</Layout>
             </ThemeProvider>

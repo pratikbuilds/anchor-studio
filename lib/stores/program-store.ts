@@ -82,7 +82,11 @@ export interface ProgramState {
   /**
    * Any error that occurred during initialization
    */
-  error: Error | null;
+  error: {
+    name: string;
+    message: string;
+    stack?: string;
+  } | null;
 
   /**
    * Details of the active program
@@ -103,6 +107,13 @@ export interface ProgramState {
     wallet: AnchorWallet,
     commitment?: CommitmentLevel
   ) => Promise<AnyProgram | null>;
+
+  /**
+   * Reinitialize the program from stored state
+   * @param wallet - The connected wallet
+   * @returns The reinitialized program or null if reinitialization failed
+   */
+  reinitialize: (wallet: AnchorWallet) => Promise<AnyProgram | null>;
 
   /**
    * Reset the store to its initial state
@@ -211,10 +222,25 @@ const useProgramStore = create<ProgramState>()(
 
           return program;
         } catch (error) {
-          const errorObj =
-            error instanceof Error
-              ? error
-              : new Error(`Failed to initialize program: ${String(error)}`);
+          let errorMessage = "Failed to initialize program";
+          let errorName = "ProgramInitializationError";
+          let errorStack: string | undefined;
+
+          if (error instanceof Error) {
+            errorMessage = error.message;
+            errorName = error.name;
+            errorStack = error.stack;
+          } else if (typeof error === "string") {
+            errorMessage = error;
+          } else if (error && typeof error === "object") {
+            errorMessage = String((error as any).message || error);
+          }
+
+          const errorObj = {
+            name: errorName,
+            message: errorMessage,
+            stack: errorStack,
+          };
 
           console.error("Program initialization error:", errorObj);
 
@@ -227,7 +253,80 @@ const useProgramStore = create<ProgramState>()(
             programDetails: null,
           });
 
-          throw errorObj;
+          throw new Error(errorMessage);
+        }
+      },
+
+      reinitialize: async (wallet: AnchorWallet) => {
+        const { programDetails } = get();
+        console.log("reinitialize programDetails", programDetails);
+        if (!programDetails) {
+          console.log(
+            "[program-store] No program details found for reinitialization"
+          );
+          return null;
+        }
+
+        try {
+          console.log("[program-store] Reinitializing program...");
+
+          // Parse the serialized IDL
+          let idl: Idl;
+          try {
+            idl = JSON.parse(programDetails.serializedIdl);
+          } catch (error) {
+            console.error("[program-store] Failed to parse IDL:", error);
+            throw new Error("Failed to parse program IDL");
+          }
+
+          if (!idl && !programDetails.rpcUrl && !programDetails.commitment) {
+            console.log(
+              "[program-store] No program details found for reinitialization"
+            );
+            return null;
+          }
+
+          // Reinitialize the program
+          const program = await get().initialize(
+            idl,
+            programDetails.rpcUrl,
+            wallet,
+            programDetails.commitment
+          );
+
+          console.log("[program-store] Program reinitialized successfully");
+          return program;
+        } catch (error) {
+          let errorMessage = "Failed to reinitialize program";
+          let errorName = "ProgramReinitializationError";
+          let errorStack: string | undefined;
+
+          if (error instanceof Error) {
+            errorMessage = error.message;
+            errorName = error.name;
+            errorStack = error.stack;
+          } else if (typeof error === "string") {
+            errorMessage = error;
+          } else if (error && typeof error === "object") {
+            errorMessage = String((error as any).message || error);
+          }
+
+          const errorObj = {
+            name: errorName,
+            message: errorMessage,
+            stack: errorStack,
+          };
+
+          console.error("[program-store] Reinitialization error:", errorObj);
+
+          // Update error state before resetting
+          set({
+            error: errorObj,
+          });
+
+          // Reset state on error
+          get().reset();
+          throw new Error(errorMessage);
         }
       },
 

@@ -61,7 +61,6 @@ export default function Page() {
             <ProgramDetails
               programDetails={programDetails}
               onReinitialize={resetProgramStore}
-              onEdit={() => console.log("EDIT")}
             />
           ) : (
             <WelcomeScreen onInitialize={resetProgramStore} />
