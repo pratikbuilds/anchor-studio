@@ -5,6 +5,7 @@ import { useAccountData } from "@/hooks/useAccountData";
 import useProgramStore from "@/lib/stores/program-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
+import AccountTable from "@/components/account-table";
 
 export default function AccountsPage() {
   const programStoreState = useProgramStore((state) => state);
@@ -12,6 +13,8 @@ export default function AccountsPage() {
   const [activeTab, setActiveTab] = useState(
     program?.idl?.accounts?.[0]?.name ?? ""
   );
+  console.log("isInitialized", isInitialized);
+  console.log("program", program);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -79,7 +82,9 @@ export default function AccountsPage() {
               key={account.name}
               value={account.name}
               className="mt-1"
-            ></TabsContent>
+            >
+              <AccountTable />
+            </TabsContent>
           ))}
         </Tabs>
       </div>

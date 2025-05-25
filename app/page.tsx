@@ -13,7 +13,9 @@ export default function Page() {
   const [showWizard, setShowWizard] = useState(false);
 
   // Get the current program state
-  const { isInitialized, programDetails, reset } = useProgramStore();
+  const { isInitialized, programDetails, reset, program } = useProgramStore();
+
+  console.log("program", program);
 
   // Handle store hydration
   useEffect(() => {
