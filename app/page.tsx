@@ -50,7 +50,6 @@ export default function Page() {
 
   return (
     <>
-      <SiteHeader />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col">
           {!isHydrated ? (
