@@ -53,12 +53,12 @@ const data = {
     },
     {
       title: "Instructions",
-      url: "#",
+      url: "/ix",
       icon: IconListDetails,
     },
     {
       title: "Transactions",
-      url: "#",
+      url: "/tx",
       icon: IconChartBar,
     },
   ],
