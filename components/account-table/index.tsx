@@ -93,7 +93,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 15, // Default page size changed to 15
+    pageSize: 10, // Default page size changed to 15
   });
 
   const columns = useMemo<ColumnDef<AccountData>[]>(() => {
@@ -221,13 +221,13 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col border rounded-lg overflow-hidden bg-card">
       {/* Search and table info header */}
-      <div className="px-6 py-4 flex items-center justify-between border-b">
+      <div className="px-6 py-4 flex items-center justify-between border-b bg-muted/20">
         <div className="relative w-full max-w-sm">
           <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder={`Search ${accountType?.name || 'accounts'}...`}
+            placeholder={`Search ${accountType?.name || "accounts"}...`}
             className="pl-9 h-9 w-full bg-background border-muted"
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
@@ -243,7 +243,10 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-b bg-muted/20 hover:bg-transparent">
+              <TableRow
+                key={headerGroup.id}
+                className="border-b bg-muted/20 hover:bg-transparent"
+              >
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -339,7 +342,8 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
       {table.getPageCount() > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-t">
           <div className="text-sm text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button

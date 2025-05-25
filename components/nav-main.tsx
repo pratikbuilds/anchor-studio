@@ -2,6 +2,7 @@
 
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,8 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  // Get the current pathname using Next.js hook
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -44,16 +47,27 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu> */}
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <Link href={item.url}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            // Check if current path matches this item's URL
+            const isActive = 
+              pathname === item.url || 
+              (item.url !== '/' && pathname.startsWith(item.url));
+              
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip={item.title}
+                  isActive={isActive}
+                >
+                  <Link href={item.url} className="flex items-center gap-3">
+                    {item.icon && <item.icon className="h-5 w-5" />}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
