@@ -75,7 +75,7 @@ export default function AccountsPage() {
       <h1 className="text-2xl font-semibold mb-4">Program Accounts</h1>
       <div className="py-3 px-4 md:px-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap lg:w-auto gap-1">
+          <TabsList className="inline-flex items-center px-3 py-1 rounded border bg-muted/40 gap-2 mb-3">
             {program.idl.accounts.map((account) => (
               <TabsTrigger
                 key={account.name}

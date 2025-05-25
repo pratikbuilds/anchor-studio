@@ -19,10 +19,13 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -31,6 +34,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { IdlField, IdlTypeDef } from "@coral-xyz/anchor/dist/cjs/idl";
+
+// Copy button component
+const CopyButton = ({ text }: { text: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("Copied to clipboard");
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-6 w-6 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      onClick={copyToClipboard}
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
+      <span className="sr-only">Copy</span>
+    </Button>
+  );
+};
 
 // Types based on IDL structure
 type AccountField = {
@@ -53,7 +85,7 @@ export type AccountData = {
 
 interface AccountTableProps {
   data: AccountData[];
-  accountType: AccountType;
+  accountType?: IdlTypeDef;
 }
 
 export function AccountTable({ data, accountType }: AccountTableProps) {
@@ -71,16 +103,37 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
         id: "publicKey",
         header: "Public Key",
         accessorKey: "publicKey",
-        cell: ({ row }) => (
-          <div className="font-mono text-sm max-w-[200px] truncate">
-            {row.getValue("publicKey")}
-          </div>
-        ),
+        cell: ({ row }) => {
+          const value = row.getValue("publicKey") as string;
+          return (
+            <div className="flex items-center gap-2 group">
+              <span className="font-mono text-sm max-w-[200px] truncate">
+                {value}
+              </span>
+              <CopyButton text={value} />
+            </div>
+          );
+        },
       },
     ];
 
+    // Type guard for IdlField
+    function isIdlField(field: unknown): field is IdlField {
+      return (
+        typeof field === "object" &&
+        field !== null &&
+        typeof (field as any).name === "string" &&
+        "type" in (field as any)
+      );
+    }
     // Add dynamic columns based on the account type fields
-    const accountFields = accountType?.type.fields || [];
+    const accountFields: IdlField[] =
+      accountType &&
+      accountType.type &&
+      accountType.type.kind === "struct" &&
+      Array.isArray(accountType.type.fields)
+        ? (accountType.type.fields as unknown[]).filter(isIdlField)
+        : [];
     const dynamicColumns: ColumnDef<AccountData>[] = accountFields.map(
       (field) => ({
         id: field.name,
@@ -102,13 +155,16 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
               return value;
           }
         },
-        cell: ({ getValue }) => {
+        cell: ({ getValue, column }) => {
           const value = getValue();
+          const isPubkey = column.columnDef.id === "publicKey";
+          const displayValue =
+            typeof value === "object" ? JSON.stringify(value) : String(value);
+
           return (
-            <div className="max-w-[200px] truncate">
-              {typeof value === "object"
-                ? JSON.stringify(value)
-                : String(value)}
+            <div className="max-w-[200px] group relative">
+              <div className="truncate">{displayValue}</div>
+              {isPubkey && <CopyButton text={displayValue} />}
             </div>
           );
         },
@@ -169,10 +225,11 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
       <div className="relative max-w-md">
         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search accounts..."
-          className="pl-9"
+          placeholder={`Search ${accountType?.name || "accounts"}...`}
+          className="pl-9 rounded-lg bg-muted/60 border border-border focus:border-primary shadow-sm"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
+          style={{ minWidth: 220 }}
         />
       </div>
 
@@ -251,7 +308,7 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/50"
+                  className="group hover:bg-muted/50 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
