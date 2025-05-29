@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
 import {
   ColumnDef,
   flexRender,
@@ -64,17 +65,39 @@ export function TransactionTable({ data, filter }: TransactionTableProps) {
       },
       {
         id: "blockTime",
-        header: "Time",
+        header: "Timestamp",
         accessorKey: "blockTime",
         cell: ({ row }) => {
-          const blockTime = row.getValue("blockTime") as number | undefined | null;
+          const blockTime = row.getValue("blockTime") as
+            | number
+            | undefined
+            | null;
           if (!blockTime) return "-";
+
+          const date = new Date(blockTime * 1000);
+
           if (!isMounted) {
-            // Render a non-locale-specific string or placeholder during SSR/hydration
-            return new Date(blockTime * 1000).toUTCString(); // Example: UTC string
+            return date.toLocaleString();
           }
-          // Render locale-specific time on the client after hydration
-          return new Date(blockTime * 1000).toLocaleString();
+
+          return date.toLocaleString();
+        },
+      },
+      {
+        id: "age",
+        header: "Age",
+        accessorFn: (row) => row.blockTime,
+        cell: ({ row }) => {
+          const blockTime = row.getValue("age") as number | undefined | null;
+          if (!blockTime) return "-";
+
+          const date = new Date(blockTime * 1000);
+
+          if (!isMounted) {
+            return formatDistanceToNow(date, { addSuffix: true });
+          }
+
+          return <span>{formatDistanceToNow(date, { addSuffix: true })}</span>;
         },
       },
       {
@@ -111,8 +134,14 @@ export function TransactionTable({ data, filter }: TransactionTableProps) {
           {table.getHeaderGroups().map((hg) => (
             <TableRow key={hg.id} className="bg-muted/10">
               {hg.headers.map((header) => (
-                <TableHead key={header.id} className="uppercase text-xs px-4 py-2">
-                  {flexRender(header.column.columnDef.header, header.getContext())}
+                <TableHead
+                  key={header.id}
+                  className="uppercase text-xs px-4 py-2"
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
                 </TableHead>
               ))}
             </TableRow>
@@ -136,7 +165,11 @@ export function TransactionTable({ data, filter }: TransactionTableProps) {
             </TableRow>
           ))}
           {table.getFilteredRowModel().rows.length === 0 && (
-            <p className="text-center py-6 text-muted-foreground">No transactions found.</p>
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                No transactions found.
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>

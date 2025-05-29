@@ -1,10 +1,8 @@
 "use client";
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react";
+import { type Icon } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { Button } from "@/components/ui/button";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -49,14 +47,14 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => {
             // Check if current path matches this item's URL
-            const isActive = 
-              pathname === item.url || 
-              (item.url !== '/' && pathname.startsWith(item.url));
-              
+            const isActive =
+              pathname === item.url ||
+              (item.url !== "/" && pathname.startsWith(item.url));
+
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton 
-                  asChild 
+                <SidebarMenuButton
+                  asChild
                   tooltip={item.title}
                   isActive={isActive}
                 >
