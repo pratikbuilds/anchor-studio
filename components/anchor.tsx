@@ -21,7 +21,6 @@ import {
   ClipboardCopy,
   Check,
 } from "lucide-react";
-import ReactJson from "react-json-view";
 
 const ANCHOR_SELF_CPI_TAG = Buffer.from("1d9acb512ea545e4", "hex").reverse();
 const ANCHOR_SELF_CPI_NAME = "Anchor Self Invocation";
@@ -124,14 +123,14 @@ export function mapIxArgsToRows(ixArgs: any, ixType: IdlInstruction, idl: Idl) {
         <tr key={key}>
           <td>{key}</td>
           <td className="text-lg-end metadata-json-viewer m-4">
-            <ReactJson
+            {/* <ReactJson
               src={ixArgs}
               theme="solarized"
               name={false}
               displayDataTypes={false}
               displayObjectSize={false}
               style={{ backgroundColor: "transparent" }}
-            />
+            /> */}
           </td>
         </tr>
       );

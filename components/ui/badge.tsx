@@ -17,6 +17,12 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        success:
+          "border-transparent bg-green-500 text-white [a&]:hover:bg-green-600 focus-visible:ring-green-500/20 dark:focus-visible:ring-green-500/40",
+        writable: // Solid Solana Neon Green theme
+          "border-transparent bg-[#00FFA3] text-black/80",
+        signer: // Solana Purple/Magenta theme (current)
+          "border-[#9945FF]/40 bg-[#9945FF]/15 text-purple-900 dark:border-[#9945FF]/60 dark:bg-[#9945FF]/25 dark:text-purple-300",
       },
     },
     defaultVariants: {
