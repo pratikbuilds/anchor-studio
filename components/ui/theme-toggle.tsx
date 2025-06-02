@@ -4,6 +4,13 @@ import * as React from "react";
 import { useTheme } from "next-themes";
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import { Button } from "./button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu";
 
 // Placeholder Solana icon (can be replaced with an SVG or icon library)
 function IconSolana(props: React.SVGProps<SVGSVGElement>) {
@@ -18,25 +25,36 @@ function IconSolana(props: React.SVGProps<SVGSVGElement>) {
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const themes = ["light", "dark", "solana"];
-  const icons = {
-    light: <IconSun className="size-5" />,
-    dark: <IconMoon className="size-5" />,
-    solana: <IconSolana className="size-5" />,
-  };
-  const nextTheme = () => {
-    const idx = themes.indexOf(theme as string);
-    setTheme(themes[(idx + 1) % themes.length]);
-  };
+  const themes = [
+    { value: "light", label: "Light", icon: <IconSun className="size-5" /> },
+    { value: "dark", label: "Dark", icon: <IconMoon className="size-5" /> },
+    {
+      value: "solana",
+      label: "Solana",
+      icon: <IconSolana className="size-5" />,
+    },
+  ];
+  const current = themes.find((t) => t.value === theme) || themes[0];
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={nextTheme}
-      aria-label="Toggle theme"
-    >
-      {icons[theme as keyof typeof icons] || <IconSun className="size-5" />}
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="Toggle theme">
+          {current.icon}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+          {themes.map((t) => (
+            <DropdownMenuRadioItem key={t.value} value={t.value}>
+              <span className="flex items-center gap-2">
+                {t.icon}
+                {t.label}
+              </span>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
