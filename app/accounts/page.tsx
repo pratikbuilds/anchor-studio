@@ -15,8 +15,6 @@ export default function AccountsPage() {
   );
   console.log("isInitialized", isInitialized);
   console.log("program", program);
-  const [isLoading, setIsLoading] = useState(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
 
   if (error) {
     return (

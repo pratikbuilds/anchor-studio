@@ -119,6 +119,48 @@
   color-scheme: dark;
 }
 
+/* Solana theme colors - Pro Design */
+.solana,
+:root.solana {
+  --background: #1a1a1a;
+  --foreground: #e6e9f0;
+  --card: #23242b;
+  --card-foreground: #e6e9f0;
+  --popover: #23242b;
+  --popover-foreground: #e6e9f0;
+  --primary: #00ffa3; /* Use gradient in components for buttons/active */
+  --primary-gradient: linear-gradient(90deg, #00ffa3 0%, #9945ff 100%);
+  --primary-hover: #00ffa3cc;
+  --primary-gradient-hover: linear-gradient(90deg, #19fb9b 0%, #9945ff 100%);
+  --primary-foreground: #181a20;
+  --secondary: #9945ff;
+  --secondary-foreground: #e6e9f0;
+  --secondary-hover: #9945ffcc;
+  --muted: #181a20;
+  --muted-foreground: #a3b1c6;
+  --accent: #19fb9b;
+  --accent-foreground: #181a20;
+  --accent-hover: #19fb9bcc;
+  --destructive: #ff3757;
+  --border: #23242b;
+  --input: #23242b;
+  --ring: #00ffa3;
+  --chart-1: #00ffa3;
+  --chart-2: #9945ff;
+  --chart-3: #19fb9b;
+  --chart-4: #fffa00;
+  --chart-5: #fbaa19;
+  --sidebar: #181a20;
+  --sidebar-foreground: #e6e9f0;
+  --sidebar-primary: #00ffa3;
+  --sidebar-primary-foreground: #181a20;
+  --sidebar-accent: #9945ff;
+  --sidebar-accent-foreground: #e6e9f0;
+  --sidebar-accent-hover: #9945ffcc;
+  --sidebar-border: #23242b;
+  --sidebar-ring: #00ffa3;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
