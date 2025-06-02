@@ -14,7 +14,6 @@ export default function AccountsPage() {
     program?.idl?.accounts?.[0]?.name ?? ""
   );
   console.log("isInitialized", isInitialized);
-  console.log("program", program);
 
   if (error) {
     return (

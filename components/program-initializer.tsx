@@ -8,7 +8,7 @@ export function ProgramInitializer() {
   const wallet = useAnchorWallet();
   const { reinitialize, programDetails, isInitialized } = useProgramStore();
   const hasInitializedRef = useRef(false);
-  console.log("programDetails", programDetails);
+
   useEffect(() => {
     // Skip if no wallet, already initialized, or already attempted initialization
     if (!wallet || hasInitializedRef.current) return;

@@ -10,28 +10,9 @@ import useAccountSignatures from "@/hooks/use-account-signatures";
 export default function TransactionsPage() {
   const [query, setQuery] = useState("");
   const programId = useProgramStore((state) => state.programDetails?.programId);
-  
-  const { 
-    data: signatures, 
-    isLoading, 
-    error,
-    isError 
-  } = useAccountSignatures({
-    address: programId || "",
-    enabled: !!programId,
-  });
-
-  // Transform the API data to match our TxItem interface
-  const transactions = signatures?.map(sig => ({
-    signature: sig.signature,
-    slot: sig.slot,
-    blockTime: sig.blockTime,
-    err: sig.err,
-    memo: sig.memo,
-    status: sig.err ? 'Error' as const : 'Success' as const,
-  })) || [];
-
-  if (!programId) {
+  const rpcUrl = useProgramStore((state) => state.programDetails?.rpcUrl);
+  console.log("programId", programId);
+  if (!programId || !rpcUrl) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] text-center p-6">
         <p className="text-center text-muted-foreground">
@@ -40,6 +21,27 @@ export default function TransactionsPage() {
       </div>
     );
   }
+
+  const {
+    data: signatures,
+    isLoading,
+    error,
+    isError,
+  } = useAccountSignatures({
+    address: programId,
+    enabled: !!programId,
+  });
+
+  // Transform the API data to match our TxItem interface
+  const transactions =
+    signatures?.map((sig) => ({
+      signature: sig.signature,
+      slot: sig.slot,
+      blockTime: sig.blockTime,
+      err: sig.err,
+      memo: sig.memo,
+      status: sig.err ? ("Error" as const) : ("Success" as const),
+    })) || [];
 
   if (isLoading) {
     return (
@@ -54,9 +56,12 @@ export default function TransactionsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)] text-center p-6">
         <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md">
-          <h3 className="font-medium text-destructive mb-2">Failed to load transactions</h3>
+          <h3 className="font-medium text-destructive mb-2">
+            Failed to load transactions
+          </h3>
           <p className="text-sm text-muted-foreground">
-            {error?.message || 'An error occurred while fetching transaction data.'}
+            {error?.message ||
+              "An error occurred while fetching transaction data."}
           </p>
         </div>
       </div>
@@ -72,7 +77,7 @@ export default function TransactionsPage() {
             View and search through transaction history for this program
           </p>
         </div>
-        
+
         <div className="relative w-full max-w-2xl">
           <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -84,10 +89,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="w-full">
-          <TransactionTable 
-            data={transactions} 
-            filter={query} 
-          />
+          <TransactionTable data={transactions} filter={query} />
         </div>
       </div>
     </div>

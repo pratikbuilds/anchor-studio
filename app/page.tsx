@@ -15,8 +15,6 @@ export default function Page() {
   // Get the current program state
   const { isInitialized, programDetails, reset, program } = useProgramStore();
 
-  console.log("program", program);
-
   // Handle store hydration
   useEffect(() => {
     const unsubscribe = useProgramStore.persist.onFinishHydration(() => {
