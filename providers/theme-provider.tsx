@@ -1,6 +1,9 @@
 "use client";
 
-import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "next-themes";
+import {
+  ThemeProvider as NextThemesProvider,
+  type ThemeProviderProps,
+} from "next-themes";
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
@@ -10,6 +13,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       enableSystem={false}
       storageKey="anchor-studio-theme"
       disableTransitionOnChange
+      themes={["light", "dark", "solana"]}
       {...props}
     >
       {children}
