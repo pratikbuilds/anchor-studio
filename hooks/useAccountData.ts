@@ -45,12 +45,15 @@ export function useOneAccountData<T extends anchor.Idl>(
 
 export function useAccountData<T extends anchor.Idl>(
   program: anchor.Program<T>,
-  accountName: keyof AllAccountsMap<T>
+  accountName: string,
+  options?: { enabled: boolean }
 ) {
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["accountData", accountName],
-    queryFn: () => getAllAccountsData<T>(program, accountName),
+    queryFn: () =>
+      getAllAccountsData<T>(program, accountName as keyof AllAccountsMap<T>),
+    ...options,
   });
   return query;
 }

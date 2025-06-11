@@ -3,7 +3,6 @@ import { Program, Idl, AnchorProvider } from "@coral-xyz/anchor";
 import { Connection, PublicKey, Commitment, Cluster } from "@solana/web3.js";
 import { AnchorWallet } from "@jup-ag/wallet-adapter";
 import { persist } from "zustand/middleware";
-import { toast } from "sonner";
 
 /**
  * Type representing a Solana program with any IDL
@@ -78,6 +77,11 @@ export interface ProgramState {
    * Whether a program is initialized
    */
   isInitialized: boolean;
+
+  /**
+   * Whether the program is currently being reinitialized
+   */
+  isReinitializing: boolean;
 
   /**
    * Any error that occurred during initialization
@@ -161,6 +165,7 @@ const useProgramStore = create<ProgramState>()(
       provider: null,
       connection: null,
       isInitialized: false,
+      isReinitializing: false,
       error: null,
       programDetails: null,
 
@@ -262,8 +267,9 @@ const useProgramStore = create<ProgramState>()(
       },
 
       reinitialize: async (wallet: AnchorWallet) => {
-        const { programDetails } = get();
+        const { programDetails, isReinitializing } = get();
         console.log("reinitialize programDetails", programDetails);
+
         if (!programDetails) {
           console.log(
             "[program-store] No program details found for reinitialization"
@@ -271,7 +277,16 @@ const useProgramStore = create<ProgramState>()(
           return null;
         }
 
+        // Prevent concurrent reinitializations
+        if (isReinitializing) {
+          console.log(
+            "[program-store] Reinitialization already in progress, skipping."
+          );
+          return null;
+        }
+
         try {
+          set({ isReinitializing: true });
           console.log("[program-store] Reinitializing program...");
 
           // Parse the serialized IDL
@@ -323,14 +338,13 @@ const useProgramStore = create<ProgramState>()(
 
           console.error("[program-store] Reinitialization error:", errorObj);
 
-          // Update error state before resetting
-          set({
-            error: errorObj,
-          });
-
-          // Reset state on error
+          // Reset state on error, but preserve the new error message
           get().reset();
+          set({ error: errorObj });
+
           throw new Error(errorMessage);
+        } finally {
+          set({ isReinitializing: false });
         }
       },
 
