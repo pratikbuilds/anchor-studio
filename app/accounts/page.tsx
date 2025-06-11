@@ -9,7 +9,7 @@ import { AccountData, AccountTable } from "@/components/account-table";
 
 export default function AccountsPage() {
   const programStoreState = useProgramStore((state) => state);
-  const { program, isInitialized, error } = programStoreState;
+  const { program, programDetails, isInitialized, error } = programStoreState;
   const [activeTab, setActiveTab] = useState(
     program?.idl?.accounts?.[0]?.name ?? ""
   );
@@ -24,12 +24,8 @@ export default function AccountsPage() {
     );
   }
 
-  if (!isInitialized || !program) {
-    return (
-      <div className="p-4">
-        Program is not initialized. Please initialize it from the main page.
-      </div>
-    );
+  if (!program || !programDetails) {
+    return <NoProgramFound />;
   }
 
   const accountNames = program.idl.accounts?.map((acc) => acc.name) || [];
@@ -49,25 +45,16 @@ export default function AccountsPage() {
       publicKey: item.publicKey.toString(),
       account: item.account,
     })) || [];
-  if (error) {
+
+  if (!program.idl?.accounts || program.idl.accounts.length === 0) {
     return (
-      <div className="p-6 text-center text-red-600 dark:text-red-400">
-        <h2 className="text-xl font-semibold">Error Initializing Program</h2>
-        <p>{error}</p>
-        <p className="mt-2 text-sm text-gray-500">
-          Please check your program ID and network settings on the main page.
-        </p>
+      <div className="p-6 text-center text-muted-foreground">
+        <h2 className="text-xl font-semibold">No Accounts Found</h2>
+        <p className="mt-2">This program doesn't define any account types.</p>
       </div>
     );
   }
-  if (
-    !program ||
-    !program.idl ||
-    !program.idl.accounts ||
-    program.idl.accounts.length === 0
-  ) {
-    return <NoProgramFound />;
-  }
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Program Accounts</h1>

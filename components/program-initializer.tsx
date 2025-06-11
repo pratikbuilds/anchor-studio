@@ -6,22 +6,43 @@ import useProgramStore from "@/lib/stores/program-store";
 
 export function ProgramInitializer() {
   const wallet = useAnchorWallet();
-  const { reinitialize, programDetails, isInitialized } = useProgramStore();
-  const hasInitializedRef = useRef(false);
+  const { reset, reinitialize, programDetails, program, isInitialized } =
+    useProgramStore();
   console.log("programDetails", programDetails);
+  console.log("program", program);
+  console.log("isInitialized", isInitialized);
+  const isReinitializingRef = useRef(false);
+
   useEffect(() => {
-    // Skip if no wallet, already initialized, or already attempted initialization
-    if (!wallet || hasInitializedRef.current) return;
-    console.log("reinitialize");
-    // Only attempt reinitialization if we have program details but the program isn't initialized
-    if (programDetails && isInitialized) {
-      hasInitializedRef.current = true; // Prevent further reinitialization attempts
-      reinitialize(wallet).catch((error) => {
-        console.error("Failed to reinitialize program:", error);
-        hasInitializedRef.current = false; // Reset on error to allow retry
-      });
+    // Only auto-reinitialize if we have a wallet AND program details but no program object
+    if (
+      wallet &&
+      programDetails &&
+      (!program || !isInitialized) &&
+      !isReinitializingRef.current
+    ) {
+      console.log(
+        "[ProgramInitializer] Auto-reinitializing program with wallet"
+      );
+      isReinitializingRef.current = true;
+
+      reinitialize(wallet)
+        .then(() => {
+          console.log(
+            "[ProgramInitializer] Program auto-reinitialized successfully"
+          );
+        })
+        .catch((error) => {
+          console.error(
+            "[ProgramInitializer] Auto-reinitialization failed:",
+            error
+          );
+        })
+        .finally(() => {
+          isReinitializingRef.current = false;
+        });
     }
-  }, [wallet, programDetails, isInitialized, reinitialize]);
+  }, [wallet, programDetails, program, isInitialized, reinitialize]);
 
   return null;
 }
