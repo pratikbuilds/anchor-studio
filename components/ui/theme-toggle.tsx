@@ -12,14 +12,16 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 
-// Placeholder Solana icon (can be replaced with an SVG or icon library)
-function IconSolana(props: React.SVGProps<SVGSVGElement>) {
+function IconSolana(props: React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" {...props}>
-      <rect width="20" height="20" rx="4" fill="#191A1F" />
-      <path d="M5 7h10l-2 2H3l2-2zM7 11h10l-2 2H5l2-2z" fill="#00FFA3" />
-      <path d="M5 9h10l-2 2H3l2-2z" fill="#9945FF" />
-    </svg>
+    <img
+      src="/solana.svg"
+      alt="Solana"
+      width="20"
+      height="20"
+      className="size-5"
+      {...props}
+    />
   );
 }
 

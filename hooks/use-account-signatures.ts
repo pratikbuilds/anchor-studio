@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { useMemo } from "react";
 import useProgramStore from "@/lib/stores/program-store";
-import { program } from "@coral-xyz/anchor/dist/cjs/native/system";
 
 type SignatureInfo = {
   signature: string;
