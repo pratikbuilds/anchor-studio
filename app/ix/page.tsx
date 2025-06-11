@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import * as anchor from "@coral-xyz/anchor";
 import { useWallet } from "@jup-ag/wallet-adapter";
 import { useCallback } from "react";
 import { PublicKey } from "@solana/web3.js";
@@ -13,7 +12,15 @@ import {
   ExternalLink,
   CheckCircle2,
   XCircle,
+  Rocket,
+  Wallet as WalletIcon,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import useProgramStore from "@/lib/stores/program-store";
 import NoProgramFound from "@/components/no-program";
@@ -24,7 +31,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,6 +74,25 @@ export default function InstructionBuilderPage() {
   const instruction = useMemo(() => {
     return instructions?.find((ix) => ix.name === selectedIx);
   }, [instructions, selectedIx]);
+
+  const areArgsValid = useMemo(() => {
+    if (!instruction) return false;
+    return instruction.args.every(
+      (arg) => args[arg.name] !== undefined && args[arg.name] !== ""
+    );
+  }, [args, instruction]);
+
+  const areAccountsValid = useMemo(() => {
+    if (!instruction) return false;
+    const requiredAccounts = instruction.accounts.filter(
+      (acc) => !("optional" in acc && acc.optional)
+    );
+    return requiredAccounts.every(
+      (acc) => accounts[acc.name] !== undefined && accounts[acc.name] !== ""
+    );
+  }, [accounts, instruction]);
+
+  const isFormValid = areArgsValid && areAccountsValid;
 
   const initialSelectedIx = useMemo(() => {
     return formattedInstructions.length > 0
@@ -278,8 +303,8 @@ export default function InstructionBuilderPage() {
             >
               <Card className="w-full flex flex-col flex-1 overflow-hidden">
                 <CardHeader className="flex-shrink-0">
-                  <div className="flex justify-between items-start">
-                    <div>
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0">
                       <CardTitle className="text-xl font-semibold">
                         {instruction.name.charAt(0).toUpperCase() +
                           instruction.name.slice(1).replace(/_/g, " ")}
@@ -289,14 +314,58 @@ export default function InstructionBuilderPage() {
                           {instruction.docs[0]}
                         </CardDescription>
                       )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {instruction.args.length} Args
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {instruction.accounts.length} Accounts
+                        </Badge>
+                      </div>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {instruction.args.length} Args •{" "}
-                      {instruction.accounts.length} Accounts
-                    </Badge>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex-shrink-0">
+                            <Button
+                              onClick={handleSubmit}
+                              disabled={!isFormValid || isLoading || !publicKey}
+                              size="lg"
+                              className="gap-2 px-6 font-semibold shadow-md"
+                            >
+                              {isLoading ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  Executing...
+                                </>
+                              ) : !publicKey ? (
+                                <>
+                                  <WalletIcon className="h-4 w-4" />
+                                  Connect Wallet
+                                </>
+                              ) : (
+                                <>
+                                  <Rocket className="h-4 w-4" />
+                                  Execute
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        {!publicKey ? (
+                          <TooltipContent>
+                            <p>Connect your wallet to execute.</p>
+                          </TooltipContent>
+                        ) : !isFormValid ? (
+                          <TooltipContent>
+                            <p>Please fill in all required fields.</p>
+                          </TooltipContent>
+                        ) : null}
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto px-6 pt-6 pb-20 space-y-6 min-h-0">
+                <CardContent className="flex-1 overflow-y-auto px-6 pt-6 pb-6 space-y-6 min-h-0">
                   {/* Arguments Section */}
                   {instruction.args.length > 0 && (
                     <div>
@@ -445,30 +514,11 @@ export default function InstructionBuilderPage() {
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="sticky bottom-0 z-10 bg-card py-4 px-6 border-t flex items-center justify-center flex-shrink-0">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isLoading || !publicKey}
-                    className="w-auto"
-                    size="sm" // Ensuring this is explicitly set
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending Transaction...
-                      </>
-                    ) : !publicKey ? (
-                      "Connect Wallet to Execute"
-                    ) : (
-                      `Execute ${instruction.name}`
-                    )}
-                  </Button>
-                </CardFooter>
               </Card>
             </TabsContent>
           )}
 
-          {/* Fallback if no instruction is selected but tabs are present (e.g. initial state before useEffect sets selectedIx) */}
+          {/* Fallback if no instruction is selected but tabs are present */}
           {!instruction && formattedInstructions.length > 0 && (
             <Card className="mt-4 flex items-center justify-center h-[200px]">
               <CardContent>
@@ -480,8 +530,6 @@ export default function InstructionBuilderPage() {
           )}
         </Tabs>
       ) : (
-        // This case is already handled by the NoProgramFound or no instructions found messages earlier
-        // but as a safeguard for the Tabs component not having items:
         <Card className="flex items-center justify-center h-[200px]">
           <CardContent>
             <p className="text-muted-foreground">
@@ -491,7 +539,7 @@ export default function InstructionBuilderPage() {
         </Card>
       )}
 
-      {/* Transaction Result Card - Placed outside Tabs, but related to the overall page state */}
+      {/* Transaction Result Card */}
       {result && (
         <Card className="border-green-500/20 bg-green-500/5 mt-6">
           <CardHeader className="pb-2">
