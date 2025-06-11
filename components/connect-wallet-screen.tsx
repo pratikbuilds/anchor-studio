@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Wallet, RefreshCw } from "lucide-react";
 import useProgramStore from "@/lib/stores/program-store";
 import { useWallet } from "@jup-ag/wallet-adapter";
+import { toast } from "sonner";
 
 export function ConnectWalletScreen() {
   const { programDetails, reset } = useProgramStore();
@@ -22,6 +23,10 @@ export function ConnectWalletScreen() {
       await connect();
     } catch (error) {
       console.error("Failed to connect wallet:", error);
+      toast.error("Failed to connect wallet", {
+        description:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      });
     }
   };
 

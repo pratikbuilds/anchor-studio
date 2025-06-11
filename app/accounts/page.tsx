@@ -27,8 +27,16 @@ export default function AccountsPage() {
   if (!program || !programDetails) {
     return <NoProgramFound />;
   }
+  if (!program.idl?.accounts || program.idl.accounts.length === 0) {
+    return (
+      <div className="p-6 text-center text-muted-foreground">
+        <h2 className="text-xl font-semibold">No Accounts Found</h2>
+        <p className="mt-2">This program doesn't define any account types.</p>
+      </div>
+    );
+  }
 
-  const accountNames = program.idl.accounts?.map((acc) => acc.name) || [];
+  const accountNames = program.idl.accounts.map((acc) => acc.name);
   const typedAccountName = accountNames[0] as keyof typeof program.account;
   const accountType = program.idl.types?.find(
     (type) => type.name === typedAccountName
