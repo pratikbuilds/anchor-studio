@@ -1,15 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, ConfirmedSignatureInfo } from "@solana/web3.js";
 import { useMemo } from "react";
 import useProgramStore from "@/lib/stores/program-store";
-
-type SignatureInfo = {
-  signature: string;
-  slot: number;
-  err: any;
-  memo: string | null;
-  blockTime?: number | null;
-};
 
 type UseAccountSignaturesOptions = {
   address: string | null;
@@ -31,21 +23,20 @@ export function useAccountSignatures({
     [address, limit, before, until]
   );
 
-  const rpcUrl = useProgramStore((program) => program.programDetails?.rpcUrl);
+  const rpcUrl = useProgramStore((state) => state.programDetails?.rpcUrl);
 
-  if (!rpcUrl) {
-    throw new Error("RPC URL not found");
-  }
+  const connection = useMemo(() => {
+    if (!rpcUrl) return null;
+    return new Connection(rpcUrl);
+  }, [rpcUrl]);
 
-  const connection = new Connection(rpcUrl);
-
-  return useQuery<SignatureInfo[], Error>({
+  const queryResult = useQuery<ConfirmedSignatureInfo[], Error>({
     queryKey,
     queryFn: async () => {
       if (!connection || !address) {
         throw new Error("Connection or address not provided");
       }
-
+      console.log("publicKey", new PublicKey(address));
       const publicKey = new PublicKey(address);
 
       const signatures = await connection.getSignaturesForAddress(publicKey, {
@@ -54,12 +45,18 @@ export function useAccountSignatures({
         until,
       });
 
+      console.log("signatures from useAccountSignatures", signatures);
+
       return signatures;
     },
     enabled: enabled && !!connection && !!address,
     staleTime: 30 * 1000, // 30 seconds
     refetchOnWindowFocus: false,
   });
+
+  console.log("Data from useAccountSignatures:", queryResult.data);
+
+  return queryResult;
 }
 
 export default useAccountSignatures;
