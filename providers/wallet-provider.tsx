@@ -4,12 +4,26 @@ import { Cluster } from "@solana/web3.js";
 import { useRpcStore } from "@/lib/stores/rpc-store";
 import { useMemo } from "react";
 
-const WalletProviderContent = ({ children }: { children: React.ReactNode }) => {
-  const { selectedRpc } = useRpcStore();
+// Map selectedRpc to a valid Cluster or undefined
+function mapRpcToCluster(rpc: string, customRpcUrl?: string): Cluster {
+  if (rpc === "mainnet-beta" || rpc === "devnet" || rpc === "testnet")
+    return rpc as Cluster;
+  if (rpc === "custom" && customRpcUrl) {
+    if (/mainnet/i.test(customRpcUrl)) return "mainnet-beta";
+    if (/devnet/i.test(customRpcUrl)) return "devnet";
+    if (/testnet/i.test(customRpcUrl)) return "testnet";
+  }
+  // Default to devnet for localnet or any other value
+  return "devnet";
+}
 
-  const env = useMemo(() => {
-    return selectedRpc as Cluster;
-  }, [selectedRpc]);
+const WalletProviderContent = ({ children }: { children: React.ReactNode }) => {
+  const { selectedRpc, customRpcUrl } = useRpcStore();
+
+  const env = useMemo(
+    () => mapRpcToCluster(selectedRpc, customRpcUrl),
+    [selectedRpc, customRpcUrl]
+  );
 
   return (
     <UnifiedWalletProvider
