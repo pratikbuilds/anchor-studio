@@ -1,12 +1,12 @@
 "use client";
 
 import NoProgramFound from "@/components/no-program";
-import { useAccountData } from "@/hooks/useAccountData";
+import { useAccountData, useAccountsByPubkeys } from "@/hooks/useAccountData";
 import useProgramStore from "@/lib/stores/program-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
 import { AccountData, AccountTable } from "@/components/account-table";
-import { IdlAccount } from "@coral-xyz/anchor/dist/cjs/idl";
+import { Idl, IdlAccount } from "@coral-xyz/anchor/dist/cjs/idl";
 import { Loader2 } from "lucide-react";
 import { useAccountPubkeys } from "@/hooks/useAccountPubkeys";
 
@@ -18,34 +18,49 @@ function AccountTabContent({
   isActive: boolean;
 }) {
   const { program } = useProgramStore();
+  if (!program) return null;
   console.log("account", account);
-  const {
-    data,
-    isLoading: accountDataLoading,
-    error: accountDataError,
-  } = useAccountData(program!, account.name, { enabled: isActive });
+
   const {
     data: pubkeys,
-    isLoading,
-    error,
-  } = useAccountPubkeys(program!, account.name, { enabled: isActive });
-  console.log("pubkeys", pubkeys);
+    isLoading: pubkeysLoading,
+    error: pubkeysError,
+  } = useAccountPubkeys(program, account.name, { enabled: isActive });
 
+  const {
+    data: accountsData,
+    isLoading: accountsLoading,
+    error: accountsError,
+  } = useAccountsByPubkeys(
+    program,
+    account.name as keyof (typeof program.idl)["accounts"],
+    pubkeys,
+    { enabled: isActive && !!pubkeys && pubkeys.length > 0 }
+  );
+  console.log("accountsData", accountsData);
   const accountType = useMemo(
-    () => program!.idl.types?.find((type) => type.name === account.name),
+    () => program.idl.types?.find((type) => type.name === account.name),
     [program, account]
   );
 
+  console.log("accountType", accountType);
+
   const transformedData: AccountData[] = useMemo(
     () =>
-      data?.map((item) => ({
-        publicKey: item.publicKey.toString(),
-        account: item.account,
-      })) || [],
-    [data]
+      accountsData?.flatMap((item) =>
+        item.account
+          ? [
+              {
+                publicKey: item.publicKey,
+                account: item.account as Record<string, unknown>,
+              },
+            ]
+          : []
+      ) ?? [],
+    [accountsData]
   );
 
-  if (accountDataLoading) {
+  if (pubkeysLoading || accountsLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -53,10 +68,11 @@ function AccountTabContent({
     );
   }
 
-  if (accountDataError) {
+  if (pubkeysError || accountsError) {
     return (
       <div className="p-4 text-red-500">
-        Error fetching accounts: {accountDataError.message}
+        Error fetching accounts:{" "}
+        {pubkeysError?.message || accountsError?.message}
       </div>
     );
   }

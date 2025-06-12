@@ -56,3 +56,35 @@ export function useAccountData<T extends anchor.Idl>(
   });
   return query;
 }
+
+export function useAccountsByPubkeys<T extends anchor.Idl>(
+  program: anchor.Program<T>,
+  accountName: keyof AllAccountsMap<T>,
+  pubkeys: string[] | undefined,
+  options?: { enabled?: boolean }
+) {
+  return useQuery({
+    queryKey: ["accountsByPubkeys", accountName, pubkeys],
+    enabled:
+      !!program &&
+      !!accountName &&
+      !!pubkeys &&
+      pubkeys.length > 0 &&
+      (options?.enabled ?? true),
+    queryFn: async () => {
+      if (!pubkeys || pubkeys.length === 0) return [];
+      const lowerCaseAccountName =
+        accountName.toLowerCase() as keyof AllAccountsMap<T>;
+      const publicKeys = pubkeys.map((k) => new anchor.web3.PublicKey(k));
+      const data = await program.account[lowerCaseAccountName].fetchMultiple(
+        publicKeys
+      );
+      // fetchMultiple returns array in the same order as pubkeys, but may include nulls for missing accounts
+      return data.map((account, i) => ({
+        publicKey: pubkeys[i],
+        account,
+      }));
+    },
+    ...options,
+  });
+}

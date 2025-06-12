@@ -134,41 +134,49 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
       Array.isArray(accountType.type.fields)
         ? (accountType.type.fields as unknown[]).filter(isIdlField)
         : [];
-    const dynamicColumns: ColumnDef<AccountData>[] = accountFields.map(
-      (field) => ({
-        id: field.name,
-        header: field.name.charAt(0).toUpperCase() + field.name.slice(1),
-        accessorFn: (row) => {
-          const value = row.account[field.name];
-          // Format based on field type
-          switch (field.type) {
-            case "pubkey":
-              return value?.toString() || "";
-            case "u64":
-            case "u32":
-            case "u16":
-            case "u8":
-              return value ? value.toString() : "0";
-            case "bool":
-              return value ? "Yes" : "No";
-            default:
-              return value;
-          }
-        },
-        cell: ({ getValue, column }) => {
-          const value = getValue();
-          const isPubkey = column.columnDef.id === "publicKey";
-          const displayValue =
-            typeof value === "object" ? JSON.stringify(value) : String(value);
 
-          return (
-            <div className="max-w-[200px] group relative">
-              <div className="truncate">{displayValue}</div>
-              {isPubkey && <CopyButton text={displayValue} />}
-            </div>
-          );
-        },
-      })
+    const dynamicColumns: ColumnDef<AccountData>[] = accountFields.map(
+      (field) => {
+        const fieldType = typeof field.type === "string" ? field.type : "";
+        return {
+          id: field.name,
+          header: field.name.charAt(0).toUpperCase() + field.name.slice(1),
+          accessorFn: (row) => {
+            const value = row.account[field.name];
+            switch (fieldType) {
+              case "pubkey":
+                return value?.toString() || "";
+              case "u64":
+              case "u32":
+              case "u16":
+              case "u8":
+                return value ? value.toString() : "0";
+              case "bool":
+                return value ? "Yes" : "No";
+              default:
+                return value;
+            }
+          },
+          cell: ({ getValue }) => {
+            const value = getValue();
+            const displayValue =
+              typeof value === "object" ? JSON.stringify(value) : String(value);
+
+            return fieldType === "pubkey" ? (
+              <div className="flex items-center gap-2 group">
+                <span className="font-mono text-sm max-w-[200px] truncate">
+                  {displayValue}
+                </span>
+                <CopyButton text={displayValue} />
+              </div>
+            ) : (
+              <div className="max-w-[200px] group relative">
+                <div className="truncate">{displayValue}</div>
+              </div>
+            );
+          },
+        };
+      }
     );
 
     return [...baseColumns, ...dynamicColumns];
