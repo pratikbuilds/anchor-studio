@@ -171,6 +171,30 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Responsive layout utilities */
+  .responsive-container {
+    @apply w-full max-w-6xl mx-auto p-3 sm:p-4 lg:p-6;
+  }
+
+  .responsive-grid {
+    @apply grid gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .responsive-card-grid {
+    @apply grid grid-cols-1 gap-3 sm:gap-4 lg:gap-6 @sm/main:grid-cols-1 @md/main:grid-cols-2 @2xl/main:grid-cols-3 @5xl/main:grid-cols-4;
+  }
+
+  /* Ensure container queries work properly */
+  .container-main {
+    container-type: inline-size;
+    container-name: main;
+  }
+
+  .container-card {
+    container-type: inline-size;
+    container-name: card;
+  }
 }
 
 /* Solana theme specific styles */
@@ -201,13 +225,12 @@
 }
 
 .solana [data-slot="tabs-trigger"]:hover {
+  background-color: #9945ff33;
   color: #e6e9f0;
-  border-color: rgba(0, 255, 163, 0.3);
 }
 
 .solana [data-slot="tabs-trigger"][data-state="active"] {
-  background-color: rgba(0, 255, 163, 0.1);
-  color: #00ffa3;
-  border-color: #00ffa3;
-  box-shadow: 0 0 8px rgba(0, 255, 163, 0.3);
+  background-color: #9945ff;
+  color: #e6e9f0;
+  border-color: #9945ff;
 }

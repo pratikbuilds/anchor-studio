@@ -98,8 +98,10 @@ export default function AccountsPage() {
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error initializing program: {error.message}
+      <div className="w-full max-w-6xl mx-auto p-3 sm:p-4 lg:p-6">
+        <div className="p-4 text-red-500">
+          Error initializing program: {error.message}
+        </div>
       </div>
     );
   }
@@ -110,17 +112,21 @@ export default function AccountsPage() {
 
   if (accounts.length === 0) {
     return (
-      <div className="p-6 text-center text-muted-foreground">
-        <h2 className="text-xl font-semibold">No Accounts Found</h2>
-        <p className="mt-2">This program doesn't define any account types.</p>
+      <div className="w-full max-w-6xl mx-auto p-3 sm:p-4 lg:p-6">
+        <div className="p-6 text-center text-muted-foreground">
+          <h2 className="text-xl font-semibold">No Accounts Found</h2>
+          <p className="mt-2">This program doesn't define any account types.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Program Accounts</h1>
-      <div className="py-3 px-4 md:px-6">
+    <div className="w-full max-w-6xl mx-auto p-3 sm:p-4 lg:p-6">
+      <div className="space-y-4 sm:space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold">Program Accounts</h1>
+        </div>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="overflow-x-auto">
             <TabsList className="inline-flex h-auto p-1">

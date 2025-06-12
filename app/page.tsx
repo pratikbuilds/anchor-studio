@@ -42,7 +42,7 @@ export default function Page() {
   if (!programDetails) {
     return (
       <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col p-3 sm:p-4 lg:p-6">
           <ProgramSetupWizard onComplete={() => {}} />
         </div>
       </div>
@@ -53,7 +53,7 @@ export default function Page() {
   if (!program || !isInitialized) {
     return (
       <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col p-3 sm:p-4 lg:p-6">
           <ConnectWalletScreen />
         </div>
       </div>
