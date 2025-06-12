@@ -1,11 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 import { ProgramDetails as ProgramDetailsType } from "@/lib/stores/program-store";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, RefreshCw, ArrowRight, Globe, Database, Code, ServerIcon, LayoutGrid } from "lucide-react";
+import {
+  Copy,
+  Check,
+  RefreshCw,
+  ArrowRight,
+  Globe,
+  Database,
+  Code,
+  ServerIcon,
+  LayoutGrid,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface ProgramDetailsProps {
   programDetails: ProgramDetailsType;
@@ -19,8 +30,11 @@ export function ProgramDetails({
   const [copiedId, setCopiedId] = useState(false);
   const [copiedRpc, setCopiedRpc] = useState(false);
   const [isReinitializing, setIsReinitializing] = useState(false);
-  
-  const copyToClipboard = async (text: string, setter: (value: boolean) => void) => {
+
+  const copyToClipboard = async (
+    text: string,
+    setter: (value: boolean) => void
+  ) => {
     await navigator.clipboard.writeText(text);
     setter(true);
     setTimeout(() => setter(false), 2000);
@@ -64,8 +78,15 @@ export function ProgramDetails({
               <div className="hidden sm:block w-px h-4 bg-muted"></div>
               <div className="text-xs text-muted-foreground flex items-center gap-1">
                 <span>Initialized</span>
-                <span className="font-mono" title={new Date(programDetails.initializedAt).toLocaleString()}>
-                  {formatDistanceToNow(new Date(programDetails.initializedAt), { addSuffix: true })}
+                <span
+                  className="font-mono"
+                  title={new Date(
+                    programDetails.initializedAt
+                  ).toLocaleString()}
+                >
+                  {formatDistanceToNow(new Date(programDetails.initializedAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
             </div>
@@ -78,7 +99,9 @@ export function ProgramDetails({
           className="w-full sm:w-auto"
           disabled={isReinitializing}
         >
-          <RefreshCw className={cn("mr-2 h-4 w-4", isReinitializing && "animate-spin")} />
+          <RefreshCw
+            className={cn("mr-2 h-4 w-4", isReinitializing && "animate-spin")}
+          />
           {isReinitializing ? "Reinitializing..." : "Reinitialize"}
         </Button>
       </div>
@@ -92,11 +115,13 @@ export function ProgramDetails({
               <Globe className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Program ID</span>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 px-2 text-xs" 
-              onClick={() => copyToClipboard(programDetails.programId, setCopiedId)}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() =>
+                copyToClipboard(programDetails.programId, setCopiedId)
+              }
             >
               {copiedId ? (
                 <>
@@ -123,11 +148,13 @@ export function ProgramDetails({
               <ServerIcon className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">RPC Endpoint</span>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 px-2 text-xs" 
-              onClick={() => copyToClipboard(programDetails.rpcUrl, setCopiedRpc)}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() =>
+                copyToClipboard(programDetails.rpcUrl, setCopiedRpc)
+              }
             >
               {copiedRpc ? (
                 <>
@@ -149,40 +176,73 @@ export function ProgramDetails({
       </div>
 
       {/* Navigation buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-        <Button
-          variant="secondary"
-          className="h-auto justify-between py-3 px-4"
-          onClick={() => (window.location.href = "/accounts")}
-        >
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-md bg-primary/10">
-              <LayoutGrid className="h-4 w-4 text-primary" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <Link href="/accounts" className="block">
+          <Button
+            variant="secondary"
+            className="h-auto w-full justify-between py-3 px-4"
+            asChild
+          >
+            <div className="flex items-center gap-2 w-full justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-primary/10">
+                  <LayoutGrid className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Accounts</div>
+                  <div className="text-xs text-muted-foreground">
+                    View and manage program accounts
+                  </div>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 ml-2 opacity-70" />
             </div>
-            <div className="text-left">
-              <div className="font-medium">Accounts</div>
-              <div className="text-xs text-muted-foreground">View and manage program accounts</div>
+          </Button>
+        </Link>
+        <Link href="/instructions" className="block">
+          <Button
+            variant="secondary"
+            className="h-auto w-full justify-between py-3 px-4"
+            asChild
+          >
+            <div className="flex items-center gap-2 w-full justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-primary/10">
+                  <Code className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Instructions</div>
+                  <div className="text-xs text-muted-foreground">
+                    View and execute program instructions
+                  </div>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 ml-2 opacity-70" />
             </div>
-          </div>
-          <ArrowRight className="h-4 w-4 ml-2 opacity-70" />
-        </Button>
-        
-        <Button
-          variant="secondary"
-          className="h-auto justify-between py-3 px-4"
-          onClick={() => (window.location.href = "/instructions")}
-        >
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-md bg-primary/10">
-              <Code className="h-4 w-4 text-primary" />
+          </Button>
+        </Link>
+        <Link href="/tx" className="block">
+          <Button
+            variant="secondary"
+            className="h-auto w-full justify-between py-3 px-4"
+            asChild
+          >
+            <div className="flex items-center gap-2 w-full justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-primary/10">
+                  <Database className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Transactions</div>
+                  <div className="text-xs text-muted-foreground">
+                    View recent transactions
+                  </div>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 ml-2 opacity-70" />
             </div>
-            <div className="text-left">
-              <div className="font-medium">Instructions</div>
-              <div className="text-xs text-muted-foreground">View and execute program instructions</div>
-            </div>
-          </div>
-          <ArrowRight className="h-4 w-4 ml-2 opacity-70" />
-        </Button>
+          </Button>
+        </Link>
       </div>
     </div>
   );
