@@ -199,7 +199,7 @@ export function ProgramDetails({
             </div>
           </Button>
         </Link>
-        <Link href="/instructions" className="block">
+        <Link href="/ix" className="block">
           <Button
             variant="secondary"
             className="h-auto w-full justify-between py-3 px-4"

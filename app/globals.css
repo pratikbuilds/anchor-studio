@@ -172,3 +172,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Solana theme specific styles */
+.solana input[data-slot="input"] {
+  background-color: #23242b;
+  border-color: #00ffa3;
+  border-width: 1.5px;
+  color: #e6e9f0;
+  box-shadow: inset 0 1px 4px 0 rgba(0, 255, 163, 0.08);
+}
+
+.solana input[data-slot="input"]::placeholder {
+  color: #a3b1c6;
+}
+
+.solana [data-slot="tabs-list"] {
+  background-color: #23242b;
+  border: none;
+  color: #e6e9f0;
+  gap: 8px;
+}
+
+.solana [data-slot="tabs-trigger"] {
+  background-color: transparent;
+  color: #a3b1c6;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.solana [data-slot="tabs-trigger"]:hover {
+  color: #e6e9f0;
+  border-color: rgba(0, 255, 163, 0.3);
+}
+
+.solana [data-slot="tabs-trigger"][data-state="active"] {
+  background-color: rgba(0, 255, 163, 0.1);
+  color: #00ffa3;
+  border-color: #00ffa3;
+  box-shadow: 0 0 8px rgba(0, 255, 163, 0.3);
+}
