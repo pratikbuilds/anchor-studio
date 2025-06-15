@@ -21,8 +21,6 @@ export default function TransactionsPage() {
     enabled: !!programId,
   });
 
-  console.log("signatures", signatures);
-
   // Transform the API data to match our TxItem interface
   const transactions =
     signatures?.map((sig) => ({
@@ -33,8 +31,6 @@ export default function TransactionsPage() {
       memo: sig.memo,
       status: sig.err ? ("Error" as const) : ("Success" as const),
     })) || [];
-
-  console.log("transactions", transactions);
 
   if (!programId) {
     return (
@@ -100,7 +96,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="w-full">
-          <TransactionTable data={transactions} filter={query} />
+          <TransactionTable data={transactions} filter={query.trim()} />
         </div>
       </div>
     </div>

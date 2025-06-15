@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { CardContent } from "@/components/ui/card";
 
 interface ProgramDetailsProps {
   programDetails: ProgramDetailsType;
@@ -30,6 +31,11 @@ export function ProgramDetails({
   const [copiedId, setCopiedId] = useState(false);
   const [copiedRpc, setCopiedRpc] = useState(false);
   const [isReinitializing, setIsReinitializing] = useState(false);
+  const [showIdl, setShowIdl] = useState(false);
+  const [idlCopied, setIdlCopied] = useState(false);
+  const idlJson = programDetails.serializedIdl
+    ? JSON.stringify(JSON.parse(programDetails.serializedIdl), null, 2)
+    : "";
 
   const copyToClipboard = async (
     text: string,
@@ -140,6 +146,31 @@ export function ProgramDetails({
           </div>
           <div className="font-mono text-xs sm:text-sm bg-muted rounded-md p-2 sm:p-2.5 overflow-x-auto whitespace-nowrap">
             {programDetails.programId}
+          </div>
+          <div className="mt-6">
+            <button
+              className="text-xs font-medium underline text-primary hover:text-primary/80 transition-colors"
+              onClick={() => setShowIdl((v) => !v)}
+            >
+              {showIdl ? "Hide IDL" : "View Complete IDL"}
+            </button>
+            {showIdl && (
+              <div className="mt-3 relative">
+                <button
+                  className="absolute top-2 right-2 z-10 text-xs bg-muted px-2 py-1 rounded hover:bg-muted/80 border border-border"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(idlJson);
+                    setIdlCopied(true);
+                    setTimeout(() => setIdlCopied(false), 2000);
+                  }}
+                >
+                  {idlCopied ? "Copied" : "Copy"}
+                </button>
+                <pre className="bg-muted rounded p-4 text-xs font-mono overflow-x-auto max-h-96 border border-border">
+                  {idlJson}
+                </pre>
+              </div>
+            )}
           </div>
         </div>
 

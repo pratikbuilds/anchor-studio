@@ -158,7 +158,7 @@ function AnchorDetails({
       </div>
 
       {/* Accounts Section */}
-      <div className="px-0 py-3.5 w-full p-6 mb-8">
+      <div className="px-0 py-3.5 w-full mb-8">
         <div className="text-xs uppercase text-muted-foreground mb-2">
           Accounts
         </div>
@@ -295,7 +295,6 @@ function ProgramLogs({
   status?: "success" | "error" | null;
 }) {
   if (!logs || logs.length === 0) return null;
-  const isSuccess = status === "success";
   return (
     <div className="mt-6 border rounded-lg bg-card/80 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-6 py-3 border-b bg-muted/10">
@@ -484,8 +483,8 @@ function TransactionDetails() {
       </div>
 
       {/* Transaction Overview */}
-      <Card className="border border-border/60 rounded-xl bg-card/60 shadow-lg overflow-hidden p-6 mb-8">
-        <CardHeader className="bg-transparent border-b py-3">
+      <Card>
+        <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-base">Transaction Overview</CardTitle>
             {renderTxStatus()}
@@ -574,8 +573,8 @@ function TransactionDetails() {
       </Card>
 
       {/* Instruction Details */}
-      <Card className="border border-border/60 rounded-xl bg-card/60 shadow-lg overflow-hidden p-6 mb-8">
-        <CardHeader className="bg-transparent border-b py-3">
+      <Card>
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">Instruction Details</CardTitle>
