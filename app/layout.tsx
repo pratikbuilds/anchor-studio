@@ -3,6 +3,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Layout } from "@/layout";
@@ -34,6 +35,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    document.title = "Anchor Studio";
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
