@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TransactionTable, TxItem } from "@/components/transaction-table";
+import { TransactionTable } from "@/components/transaction-table";
 import { Input } from "@/components/ui/input";
 import { SearchIcon, Loader2 } from "lucide-react";
 import useProgramStore from "@/lib/stores/program-store";

@@ -166,7 +166,10 @@ export function TransactionTable({ data, filter }: TransactionTableProps) {
           ))}
           {table.getFilteredRowModel().rows.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+              <TableCell
+                colSpan={5}
+                className="text-center py-6 text-muted-foreground"
+              >
                 No transactions found.
               </TableCell>
             </TableRow>

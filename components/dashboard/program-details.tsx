@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { CardContent } from "@/components/ui/card";
 
 interface ProgramDetailsProps {
   programDetails: ProgramDetailsType;

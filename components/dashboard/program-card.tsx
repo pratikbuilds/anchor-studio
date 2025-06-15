@@ -1,11 +1,18 @@
 "use client";
 
 import { type ProgramDetails } from "@/lib/stores/program-store";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
-import { ServerIcon, CodeIcon, CopyIcon, ExternalLinkIcon } from "lucide-react";
+import { ServerIcon, CodeIcon, ExternalLinkIcon } from "lucide-react";
 import { CopyButton } from "@/components/ui/copy-button";
 
 interface ProgramCardProps {
@@ -33,29 +40,38 @@ export function ProgramCard({ program, onSelect }: ProgramCardProps) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">{program.name}</CardTitle>
-          <Badge variant="outline" className={getClusterBadgeColor(program.cluster)}>
+          <Badge
+            variant="outline"
+            className={getClusterBadgeColor(program.cluster)}
+          >
             {program.cluster}
           </Badge>
         </div>
         <CardDescription className="flex items-center gap-2 font-mono text-xs">
           {program.programId.slice(0, 12)}...{program.programId.slice(-8)}
-          <CopyButton value={program.programId} variant="ghost" size="icon" className="h-5 w-5" />
+          <CopyButton
+            value={program.programId}
+            variant="ghost"
+            size="icon"
+            className="h-5 w-5"
+          />
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-sm text-muted-foreground mb-2">
-          Initialized {formatDistanceToNow(program.initializedAt, { addSuffix: true })}
+          Initialized{" "}
+          {formatDistanceToNow(program.initializedAt, { addSuffix: true })}
         </div>
         <div className="text-sm text-muted-foreground truncate">
           RPC: {program.rpcUrl}
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 pt-2 pb-4">
-        <Button 
-          variant="default" 
-          size="sm" 
+        <Button
+          variant="default"
+          size="sm"
           className="flex-1"
-          onClick={() => onSelect(program.id)}
+          onClick={() => onSelect(program.programId)}
         >
           <ExternalLinkIcon className="mr-2 h-4 w-4" />
           Open

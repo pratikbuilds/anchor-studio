@@ -6,13 +6,8 @@ import useProgramStore from "@/lib/stores/program-store";
 
 export function ProgramInitializer() {
   const wallet = useAnchorWallet();
-  const {
-    reinitialize,
-    programDetails,
-    program,
-    isInitialized,
-    isReinitializing,
-  } = useProgramStore();
+  const { reinitialize, programDetails, program, isReinitializing } =
+    useProgramStore();
 
   useEffect(() => {
     // Only auto-reinitialize if we have a wallet AND program details,

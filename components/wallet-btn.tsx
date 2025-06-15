@@ -5,7 +5,7 @@ import { Wallet } from "lucide-react";
 import { useUnifiedWalletContext } from "@jup-ag/wallet-adapter";
 
 function WalletBtn() {
-  const { connected, disconnect, connect, connecting, publicKey } = useWallet();
+  const { connected, disconnect, connecting, publicKey } = useWallet();
   const { setShowModal } = useUnifiedWalletContext();
 
   return connected ? (

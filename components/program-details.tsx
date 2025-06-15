@@ -1,8 +1,6 @@
 "use client";
 
-import useProgramStore, {
-  type ProgramDetails as ProgramDetailsType,
-} from "@/lib/stores/program-store";
+import useProgramStore from "@/lib/stores/program-store";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -15,11 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { formatDistanceToNow } from "date-fns";
 import { CopyButton } from "@/components/ui/copy-button";
 import {
-  InfoIcon,
   CheckCircleIcon,
   XCircleIcon,
   LinkIcon,
-  DatabaseIcon,
   ClockIcon,
   ServerIcon,
 } from "lucide-react";

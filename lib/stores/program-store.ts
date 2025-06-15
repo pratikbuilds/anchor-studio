@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Program, Idl, AnchorProvider } from "@coral-xyz/anchor";
-import { Connection, PublicKey, Commitment, Cluster } from "@solana/web3.js";
+import { Connection, Commitment, Cluster } from "@solana/web3.js";
 import { AnchorWallet } from "@jup-ag/wallet-adapter";
 import { persist } from "zustand/middleware";
 

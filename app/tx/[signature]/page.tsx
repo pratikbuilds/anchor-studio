@@ -52,9 +52,9 @@ function getRelativeTime(timestamp: number): string {
 }
 
 type PageProps = {
-  params: {
+  params: Promise<{
     signature: string;
-  };
+  }>;
 };
 
 /**

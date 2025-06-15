@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { IdlType } from "@/types/idl";
+import { IdlType } from "@coral-xyz/anchor/dist/cjs/idl";
 import { PublicKey } from "@solana/web3.js";
 
 interface TypeInputProps {
@@ -44,9 +44,9 @@ export function TypeInput({
   };
 
   const renderInput = () => {
-    if (typeof type === 'string') {
+    if (typeof type === "string") {
       switch (type) {
-        case 'bool':
+        case "bool":
           return (
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -55,32 +55,32 @@ export function TypeInput({
                 onCheckedChange={handleCheckboxChange}
               />
               <Label htmlFor="boolean-checkbox">
-                {value ? 'True' : 'False'}
+                {value ? "True" : "False"}
               </Label>
             </div>
           );
-        case 'publicKey':
+        case "pubkey":
           return (
             <Input
               type="text"
-              value={value || ""}
+              value={(value as string) || ""}
               onChange={handlePublicKeyChange}
               placeholder={placeholder || "Enter public key..."}
               className={className}
             />
           );
-        case 'u8':
-        case 'i8':
-        case 'u16':
-        case 'i16':
-        case 'u32':
-        case 'i32':
-        case 'u64':
-        case 'i64':
-        case 'u128':
-        case 'i128':
-        case 'u256':
-        case 'i256':
+        case "u8":
+        case "i8":
+        case "u16":
+        case "i16":
+        case "u32":
+        case "i32":
+        case "u64":
+        case "i64":
+        case "u128":
+        case "i128":
+        case "u256":
+        case "i256":
           return (
             <Input
               type="text"
@@ -92,8 +92,8 @@ export function TypeInput({
               className={className}
             />
           );
-        case 'f32':
-        case 'f64':
+        case "f32":
+        case "f64":
           return (
             <Input
               type="number"
@@ -104,7 +104,7 @@ export function TypeInput({
               className={className}
             />
           );
-        case 'string':
+        case "string":
           return (
             <Input
               type="text"
@@ -128,9 +128,9 @@ export function TypeInput({
     }
 
     // Handle complex types
-    if (typeof type === 'object') {
-      if ('option' in type || 'coption' in type) {
-        const innerType = 'option' in type ? type.option : type.coption;
+    if (typeof type === "object") {
+      if ("option" in type || "coption" in type) {
+        const innerType = "option" in type ? type.option : type.coption;
         return (
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -139,14 +139,16 @@ export function TypeInput({
                 checked={value !== undefined && value !== null}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    onChange('');
+                    onChange("");
                   } else {
                     onChange(undefined);
                   }
                 }}
               />
               <Label htmlFor="has-value">
-                {value !== undefined && value !== null ? 'Has value' : 'No value'}
+                {value !== undefined && value !== null
+                  ? "Has value"
+                  : "No value"}
               </Label>
             </div>
             {value !== undefined && value !== null && (
@@ -164,7 +166,7 @@ export function TypeInput({
         );
       }
 
-      if ('vec' in type || 'array' in type) {
+      if ("vec" in type || "array" in type) {
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -172,7 +174,7 @@ export function TypeInput({
               <button
                 type="button"
                 onClick={() => {
-                  const newArray = Array.isArray(value) ? [...value, ''] : [''];
+                  const newArray = Array.isArray(value) ? [...value, ""] : [""];
                   onChange(newArray);
                 }}
                 className="text-sm text-blue-500 hover:text-blue-700"
@@ -185,7 +187,7 @@ export function TypeInput({
                 {value.map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <TypeInput
-                      type={'vec' in type ? type.vec : type.array[0]}
+                      type={"vec" in type ? type.vec : type.array[0]}
                       value={item}
                       onChange={(newValue) => {
                         const newArray = [...value];
@@ -209,19 +211,29 @@ export function TypeInput({
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No items added yet</p>
+              <p className="text-sm text-muted-foreground">
+                No items added yet
+              </p>
             )}
           </div>
         );
       }
 
-      if ('defined' in type) {
+      if ("defined" in type) {
         // For custom types, we'll just use a JSON input
         return (
           <div className="space-y-2">
-            <Label>{type.defined}</Label>
+            <Label>
+              {typeof type.defined === "string"
+                ? type.defined
+                : JSON.stringify(type.defined)}
+            </Label>
             <textarea
-              value={typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+              value={
+                typeof value === "string"
+                  ? value
+                  : JSON.stringify(value, null, 2)
+              }
               onChange={(e) => {
                 try {
                   const parsed = JSON.parse(e.target.value);
@@ -230,7 +242,9 @@ export function TypeInput({
                   onChange(e.target.value);
                 }
               }}
-              placeholder={`Enter ${type.defined} as JSON...`}
+              placeholder={`Enter ${
+                typeof type.defined === "string" ? type.defined : "custom type"
+              } as JSON...`}
               className="w-full min-h-[100px] p-2 border rounded-md font-mono text-sm"
             />
           </div>

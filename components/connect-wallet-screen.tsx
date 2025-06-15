@@ -19,7 +19,7 @@ import { CopyButton } from "@/components/ui/copy-button";
 
 export function ConnectWalletScreen() {
   const { programDetails, reset } = useProgramStore();
-  const { wallet, connect, connecting } = useWallet();
+  const { connect, connecting } = useWallet();
 
   const handleConnect = async () => {
     try {

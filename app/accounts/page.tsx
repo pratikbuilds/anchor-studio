@@ -5,10 +5,23 @@ import { useAccountData, useAccountsByPubkeys } from "@/hooks/useAccountData";
 import useProgramStore from "@/lib/stores/program-store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
-import { AccountData, AccountTable } from "@/components/account-table";
-import { Idl, IdlAccount } from "@coral-xyz/anchor/dist/cjs/idl";
+import { IdlAccount } from "@coral-xyz/anchor/dist/cjs/idl";
 import { Loader2 } from "lucide-react";
 import { useAccountPubkeys } from "@/hooks/useAccountPubkeys";
+import dynamic from "next/dynamic";
+import { AccountData } from "@/components/account-table";
+
+const AccountTable = dynamic(
+  () => import("@/components/account-table").then((mod) => mod.AccountTable),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  }
+);
 
 function AccountTabContent({
   account,
