@@ -83,12 +83,16 @@ function AccountTabContent({
 
   if (pubkeysError || accountsError) {
     const errorMsg = pubkeysError?.message || accountsError?.message || "";
-    if (errorMsg.includes("ERR_BLOCKED_BY_CLIENT")) {
+    if (
+      errorMsg.includes("ERR_BLOCKED_BY_CLIENT") ||
+      errorMsg.includes("Failed to fetch")
+    ) {
       return (
         <div className="p-4 text-red-500">
           Your browser is blocking requests to the URL required to fetch account
-          data. This is often caused by an ad blocker or browser extension.
-          Please whitelist this site or disable the extension for this page.
+          data. This is often caused by an ad blocker, browser extension, or
+          network policy. Please whitelist this site or disable the extension
+          for this page.
           <br />
           <span className="text-xs break-all">{errorMsg}</span>
         </div>
