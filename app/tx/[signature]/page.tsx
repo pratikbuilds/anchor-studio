@@ -33,6 +33,14 @@ import {
   IdlTypeDefTyStruct,
 } from "@coral-xyz/anchor/dist/cjs/idl";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 
 /**
  * Get a formatted relative time string using date-fns
@@ -132,40 +140,61 @@ function AnchorDetails({
   return (
     <div className="divide-y divide-border">
       {/* Program Section */}
-      <div className="px-4 py-3.5">
-        <div className="text-xs uppercase text-muted-foreground mb-2">
+      <div className="py-3.5 w-full">
+        <div className="text-xs uppercase text-muted-foreground mb-2 px-0">
           Program
         </div>
-        <div className="flex items-center justify-between py-2">
-          <span className="font-medium text-sm">{programName}</span>
-          <AddressWithCopy address={ix.programId.toString()} />
+        <div className="grid grid-cols-3 items-center py-2">
+          <span className="font-medium text-sm col-span-2 px-5">
+            {programName}
+          </span>
+          <div className="text-sm text-right px-5">
+            <AddressWithCopy
+              address={ix.programId.toString()}
+              className="justify-end"
+            />
+          </div>
         </div>
       </div>
 
       {/* Accounts Section */}
-      <div className="px-4 py-3.5">
+      <div className="px-0 py-3.5 w-full">
         <div className="text-xs uppercase text-muted-foreground mb-2">
           Accounts
         </div>
-        <div className="divide-y divide-border">
-          {ix.keys.map(({ pubkey, isSigner, isWritable }, keyIndex) => {
-            const accountName = ixAccounts
-              ? keyIndex < ixAccounts.length
-                ? camelToTitleCase(ixAccounts[keyIndex].name)
-                : `Remaining Account #${keyIndex + 1 - ixAccounts.length}`
-              : `Account #${keyIndex + 1}`;
-
-            return (
-              <div
-                key={keyIndex}
-                className="flex items-center justify-between py-2"
-              >
-                <div>
-                  <div className="font-medium text-sm">{accountName}</div>
-                  <div className="flex gap-1.5 mt-1.5">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-left px-5 py-3 text-sm font-medium">
+                Name
+              </TableHead>
+              <TableHead className="text-left px-5 py-3 text-sm text-muted-foreground font-normal">
+                Type
+              </TableHead>
+              <TableHead className="text-right px-5 py-3 text-sm font-medium">
+                Address
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {ix.keys.map(({ pubkey, isSigner, isWritable }, keyIndex) => {
+              const accountName = ixAccounts
+                ? keyIndex < ixAccounts.length
+                  ? camelToTitleCase(ixAccounts[keyIndex].name)
+                  : `Remaining Account #${keyIndex + 1 - ixAccounts.length}`
+                : `Account #${keyIndex + 1}`;
+              return (
+                <TableRow
+                  key={keyIndex}
+                  className="odd:bg-muted/10 hover:bg-muted/20 transition-colors h-14"
+                >
+                  <TableCell className="text-sm font-medium align-middle px-5 py-4 text-left">
+                    {accountName}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground align-middle px-5 py-4 text-left space-x-2">
                     {isWritable && (
                       <Badge
-                        variant="writable" // Use new 'writable' variant
+                        variant="writable"
                         className="text-xs px-1.5 py-0.5 h-5"
                       >
                         Writable
@@ -173,65 +202,82 @@ function AnchorDetails({
                     )}
                     {isSigner && (
                       <Badge
-                        variant="signer" // Use new 'signer' variant
+                        variant="signer"
                         className="text-xs px-1.5 py-0.5 h-5"
                       >
                         Signer
                       </Badge>
                     )}
-                  </div>
-                </div>
-                <AddressWithCopy address={pubkey.toString()} />
-              </div>
-            );
-          })}
-        </div>
+                  </TableCell>
+                  <TableCell className="text-sm align-middle px-5 py-4 text-right">
+                    <AddressWithCopy
+                      address={pubkey.toString()}
+                      className="justify-end"
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
 
       {/* Arguments Section */}
       {decodedIxData && ixDef && ixDef.args.length > 0 && (
-        <div className="px-4 py-3.5">
+        <div className="px-0 py-3.5 w-full mt-6 mb-0">
           <div className="text-xs uppercase text-muted-foreground mb-2">
             Arguments
           </div>
-          <div className="divide-y divide-border">
-            {ixDef.args.map((arg, index) => {
-              const value =
-                decodedIxData?.data && typeof decodedIxData.data === "object"
-                  ? (decodedIxData.data as Record<string, any>)[arg.name]
-                  : undefined;
-
-              return (
-                <div
-                  key={index}
-                  className="flex flex-col sm:flex-row sm:items-start justify-between py-2"
-                >
-                  <div className="mb-1 sm:mb-0 mr-4">
-                    <div className="font-medium text-sm">
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left px-5 py-3 text-sm font-medium">
+                  Name
+                </TableHead>
+                <TableHead className="text-left px-5 py-3 text-sm text-muted-foreground font-normal">
+                  Type
+                </TableHead>
+                <TableHead className="text-right px-5 py-3 text-sm font-medium">
+                  Value
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ixDef.args.map((arg, index) => {
+                const value =
+                  decodedIxData?.data && typeof decodedIxData.data === "object"
+                    ? (decodedIxData.data as Record<string, any>)[arg.name]
+                    : undefined;
+                return (
+                  <TableRow
+                    key={index}
+                    className="odd:bg-muted/10 hover:bg-muted/20 transition-colors h-14"
+                  >
+                    <TableCell className="text-sm font-medium align-middle px-5 py-4 text-left">
                       {camelToTitleCase(arg.name)}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground align-middle px-5 py-4 text-left">
                       {typeof arg.type === "string"
                         ? arg.type
                         : JSON.stringify(arg.type)}
-                    </div>
-                  </div>
-                  <div className="font-mono text-sm break-all text-right sm:ml-auto flex-shrink min-w-0">
-                    {typeof value === "object" ? (
-                      <CollapsibleJson
-                        data={value}
-                        title={camelToTitleCase(arg.name)}
-                        defaultOpen={false}
-                        className="text-left !p-0 !bg-transparent !border-0 !shadow-none"
-                      />
-                    ) : (
-                      String(value ?? "")
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                    </TableCell>
+                    <TableCell className="text-sm align-middle px-5 py-4 text-right">
+                      {typeof value === "object" && value !== null ? (
+                        <CollapsibleJson
+                          data={value}
+                          title={camelToTitleCase(arg.name)}
+                          defaultOpen={false}
+                          className="text-right !p-0 !bg-transparent !border-0 !shadow-none"
+                        />
+                      ) : (
+                        <span className="text-sm">{String(value ?? "")}</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
@@ -300,10 +346,6 @@ function TransactionDetails() {
           </CardHeader>
           <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Skeleton className="h-4 w-24 mb-2" />
-                <Skeleton className="h-6 w-full" />
-              </div>
               <div>
                 <Skeleton className="h-4 w-24 mb-2" />
                 <Skeleton className="h-6 w-full" />
