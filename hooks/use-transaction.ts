@@ -37,6 +37,7 @@ export function useTransaction(signature: string | undefined) {
       console.log("response", response);
       if (response !== null) {
         const versionedTx = response.transaction;
+        const meta = response.meta;
         const message = versionedTx.message; // This is now a VersionedMessage
         // Convert Uint8Array signatures to base58 string array
         const signatures = versionedTx.signatures;
@@ -57,6 +58,7 @@ export function useTransaction(signature: string | undefined) {
           raw: {
             slot: response.slot,
             blockTime: response.blockTime,
+            meta,
             message,
             signatures,
             transaction: decompiledTxMsg,

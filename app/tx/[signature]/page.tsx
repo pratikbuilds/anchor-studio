@@ -158,11 +158,11 @@ function AnchorDetails({
       </div>
 
       {/* Accounts Section */}
-      <div className="px-0 py-3.5 w-full">
+      <div className="px-0 py-3.5 w-full p-6 mb-8">
         <div className="text-xs uppercase text-muted-foreground mb-2">
           Accounts
         </div>
-        <Table className="w-full">
+        <Table className="w-full border-0 rounded-none shadow-none">
           <TableHeader>
             <TableRow>
               <TableHead className="text-left px-5 py-3 text-sm font-medium">
@@ -228,7 +228,7 @@ function AnchorDetails({
           <div className="text-xs uppercase text-muted-foreground mb-2">
             Arguments
           </div>
-          <Table className="w-full">
+          <Table className="w-full border-0 rounded-none shadow-none">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left px-5 py-3 text-sm font-medium">
@@ -284,6 +284,50 @@ function AnchorDetails({
   );
 }
 
+// ProgramLogs component
+function ProgramLogs({
+  logs,
+  programName,
+  status,
+}: {
+  logs?: string[];
+  programName?: string;
+  status?: "success" | "error" | null;
+}) {
+  if (!logs || logs.length === 0) return null;
+  const isSuccess = status === "success";
+  return (
+    <div className="mt-6 border rounded-lg bg-card/80 shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-6 py-3 border-b bg-muted/10">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm text-foreground">
+            {programName || "Program"} Instruction Logs
+          </span>
+        </div>
+      </div>
+      <div className="px-6 py-4 bg-black/60">
+        <pre className="text-xs md:text-sm font-mono text-left text-muted-foreground whitespace-pre-wrap leading-relaxed">
+          {logs.map((log, i) => (
+            <div
+              key={i}
+              className={cn(
+                "mb-1",
+                log.includes("success")
+                  ? "text-green-400"
+                  : log.includes("error")
+                  ? "text-red-400"
+                  : ""
+              )}
+            >
+              {log}
+            </div>
+          ))}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Main transaction details component
  */
@@ -301,6 +345,11 @@ function TransactionDetails() {
   } = useTransaction(signature);
 
   // Extract transaction details
+  const meta = transactionData?.raw?.meta;
+  const logs = meta?.logMessages;
+  const computeUnits = meta?.computeUnitsConsumed;
+  const fee = meta?.fee;
+  const transactionError = meta?.err;
   const instructions = transactionData?.raw?.transaction?.instructions;
   const anchorName =
     instructions && program
@@ -435,8 +484,8 @@ function TransactionDetails() {
       </div>
 
       {/* Transaction Overview */}
-      <Card className="border-0 shadow-sm overflow-hidden">
-        <CardHeader className="bg-card/95 backdrop-blur-sm border-b py-3">
+      <Card className="border border-border/60 rounded-xl bg-card/60 shadow-lg overflow-hidden p-6 mb-8">
+        <CardHeader className="bg-transparent border-b py-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-base">Transaction Overview</CardTitle>
             {renderTxStatus()}
@@ -489,13 +538,44 @@ function TransactionDetails() {
                 </div>
               </div>
             )}
+
+            {typeof computeUnits === "number" && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                  Compute Units
+                </h4>
+                <span className="font-mono text-sm">
+                  {computeUnits.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {typeof fee === "number" && (
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                  Fee (lamports)
+                </h4>
+                <span className="font-mono text-sm">
+                  {fee.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {transactionError && (
+              <div className="md:col-span-2">
+                <h4 className="text-sm font-medium text-destructive mb-1">
+                  Transaction Error
+                </h4>
+                <span className="font-mono text-sm text-destructive">
+                  {JSON.stringify(transactionError)}
+                </span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Instruction Details */}
-      <Card className="border-0 shadow-sm overflow-hidden">
-        <CardHeader className="bg-card/95 backdrop-blur-sm border-b py-3">
+      <Card className="border border-border/60 rounded-xl bg-card/60 shadow-lg overflow-hidden p-6 mb-8">
+        <CardHeader className="bg-transparent border-b py-3">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">Instruction Details</CardTitle>
@@ -517,6 +597,13 @@ function TransactionDetails() {
           )}
         </CardContent>
       </Card>
+
+      {/* Program Logs */}
+      <ProgramLogs
+        logs={logs ?? undefined}
+        programName={getAnchorProgramName(program)}
+        status={!transactionError ? "success" : "error"}
+      />
 
       {/* Raw Transaction Data */}
       <CollapsibleJson
