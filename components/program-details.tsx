@@ -21,6 +21,7 @@ import {
   LinkIcon,
   DatabaseIcon,
   ClockIcon,
+  ServerIcon,
 } from "lucide-react";
 import {
   Tooltip,
@@ -121,7 +122,7 @@ export function ProgramDetails() {
 
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <DatabaseIcon className="h-4 w-4" />
+              <ServerIcon className="h-4 w-4" />
               <span>RPC Connection</span>
             </div>
             <div className="flex items-center gap-2">

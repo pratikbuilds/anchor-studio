@@ -1,3 +1,5 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import dynamic from "next/dynamic";
@@ -5,6 +7,9 @@ import WalletBtn from "./wallet-btn";
 import { RpcSettings } from "./rpc-settings";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
+import useProgramStore from "@/lib/stores/program-store";
+import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react";
 
 function ThemeToggleLoading() {
   return (
@@ -44,6 +49,8 @@ const ThemeToggle = dynamic(
 );
 
 export function SiteHeader() {
+  const cluster = useProgramStore((state) => state.programDetails?.cluster);
+
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
@@ -52,7 +59,13 @@ export function SiteHeader() {
       </div>
       <div className="flex items-center gap-2 px-4">
         <div className="flex items-center gap-1">
-          <RpcSettings />
+          {/* <RpcSettings /> */}
+          {cluster && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium ml-2">
+              <Globe className="h-4 w-4" />
+              {cluster}
+            </div>
+          )}
           <ErrorBoundary FallbackComponent={ThemeToggleError}>
             <ThemeToggle />
           </ErrorBoundary>
