@@ -1,11 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { TransactionTable } from "@/components/transaction-table";
 import { Input } from "@/components/ui/input";
 import { SearchIcon, Loader2 } from "lucide-react";
 import useProgramStore from "@/lib/stores/program-store";
 import useAccountSignatures from "@/hooks/use-account-signatures";
+import dynamic from "next/dynamic";
+
+const TransactionTable = dynamic(
+  () =>
+    import("@/components/transaction-table").then(
+      (mod) => mod.TransactionTable
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  }
+);
 
 export default function TransactionsPage() {
   const [query, setQuery] = useState("");
