@@ -520,13 +520,13 @@ function TransactionDetails() {
               <AddressWithCopy address={signature} />
             </div>
 
-            {program && instructions && instructions[0] && (
+            {program && filteredInstructions && filteredInstructions[0] && (
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">
                   Program
                 </h4>
                 <AddressWithCopy
-                  address={instructions[0].programId.toString() || ""}
+                  address={filteredInstructions[0].programId.toString() || ""}
                   label={getAnchorProgramName(program) || "Unknown Program"}
                 />
               </div>
@@ -609,7 +609,10 @@ function TransactionDetails() {
         </CardHeader>
         <CardContent className="p-0">
           {instructions && program ? (
-            <AnchorDetails ix={instructions[0]} anchorProgram={program} />
+            <AnchorDetails
+              ix={filteredInstructions[0]}
+              anchorProgram={program}
+            />
           ) : (
             <div className="p-4 text-center text-muted-foreground">
               <p>No instruction data available</p>
