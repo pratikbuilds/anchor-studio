@@ -6,14 +6,14 @@
 
 <p align="center">
   <b>Explore, interact with, and debug Solana Anchor programs visually.</b><br/>
-  Upload your Anchor IDL, connect your wallet, and get instant insights into your program's accounts, instructions, and transactions—all in a beautiful, modern UI.
+  Upload your Anchor IDL, connect your wallet, and get instant insights into your program's accounts, instructions, and transactions—all in a beautiful
 </p>
 
 ---
 
 ## 🚀 What is Anchor Studio?
 
-**Anchor Studio** is a developer tool and dashboard for Solana Anchor programs. It lets you:
+**Anchor Studio** is a developer tool and dashboard for Solana Anchor program. It lets you:
 
 - Upload any Anchor IDL (JSON) and instantly visualize your program's structure
 - Connect your wallet and interact with program instructions
@@ -30,7 +30,6 @@
 - **Accounts explorer:** Browse, filter, and inspect program accounts
 - **Instruction playground:** View, simulate, and send instructions with decoded arguments
 - **Transaction viewer:** Decode and analyze recent transactions, logs, and errors
-- **Beautiful UI:** Built with Next.js, Tailwind, and modern React patterns
 
 ---
 
@@ -51,16 +50,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📸 Screenshots
 
 > _Add screenshots here to showcase the dashboard, account explorer, and transaction viewer!_
-
----
-
-## 🧰 Tech Stack
-
-- Next.js 15
-- React 19
-- Tailwind CSS
-- Zustand, TanStack Query
-- @coral-xyz/anchor, @solana/web3.js
 
 ---
 
