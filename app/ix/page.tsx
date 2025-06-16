@@ -21,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 import useProgramStore from "@/lib/stores/program-store";
 import NoProgramFound from "@/components/no-program";
@@ -56,6 +57,8 @@ export default function InstructionBuilderPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{ signature: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   // Get instructions from the program IDL
   const instructions = program?.idl?.instructions;
@@ -234,12 +237,14 @@ export default function InstructionBuilderPage() {
       const txSignature = await methodBuilder.accounts(accountsObject).rpc();
       console.log("Transaction sent with signature:", txSignature);
       setResult({ signature: txSignature });
+      setShowResult(true);
       toast.success("Transaction sent", {
         description: "Your transaction was successfully sent to the network.",
       });
     } catch (err: any) {
       console.error("Transaction failed:", err);
       setError(err.message || "An unknown error occurred");
+      setShowError(true);
       toast.error("Transaction failed", {
         description: err.message || "An unknown error occurred",
       });
@@ -545,83 +550,89 @@ export default function InstructionBuilderPage() {
           </Card>
         )}
 
-        {/* Transaction Result Card */}
-        {result && (
-          <Card className="border-green-500/20 bg-green-500/5 mt-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-medium text-green-600 flex items-center">
-                <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
-                Transaction Successful
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Signature:</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 gap-1"
-                      asChild
-                    >
-                      <a
-                        href={`https://explorer.solana.com/tx/${
-                          result?.signature
-                        }?cluster=${
-                          program?.provider?.connection?.rpcEndpoint?.includes(
-                            "devnet"
-                          )
-                            ? "devnet"
-                            : "mainnet"
-                        }`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+        {/* Success Toast Notification */}
+        {result && showResult && (
+          <div className="fixed top-6 right-6 z-50 w-full max-w-sm">
+            <Card className="border-green-500/20 bg-green-500/5 shadow-lg">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <div className="flex items-center text-base font-medium text-green-600">
+                  <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                  Transaction Successful
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowResult(false)}
+                >
+                  <XCircle className="h-4 w-4 text-green-500" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Signature:</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 gap-1"
+                        asChild
                       >
-                        <span className="text-xs">View in Explorer</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </Button>
-                  </div>
-                  <div className="p-3 bg-background rounded-md overflow-x-auto flex items-center gap-2 border">
-                    <code className="text-xs break-all flex-1">
-                      {result?.signature}
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={() => {
-                        if (result?.signature) {
-                          navigator.clipboard.writeText(result.signature);
-                          toast.success("Signature copied to clipboard");
-                        }
-                      }}
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
+                        <Link href={`/tx/${result.signature}`}>
+                          <span className="text-xs">View Signature Page</span>
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </Button>
+                    </div>
+                    <div className="p-3 bg-background rounded-md overflow-x-auto flex items-center gap-2 border">
+                      <code className="text-xs break-all flex-1">
+                        {result?.signature}
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => {
+                          if (result?.signature) {
+                            navigator.clipboard.writeText(result.signature);
+                            toast.success("Signature copied to clipboard");
+                          }
+                        }}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
-        {/* Error Card */}
-        {error && (
-          <Card className="border-destructive mt-6">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-medium text-destructive flex items-center">
-                <XCircle className="h-4 w-4 mr-2 text-destructive" />
-                Transaction Failed
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="p-3 bg-destructive/10 rounded-md">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Error Toast Notification */}
+        {error && showError && (
+          <div className="fixed top-6 right-6 z-50 w-full max-w-sm">
+            <Card className="border-destructive bg-destructive/10 shadow-lg">
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <div className="flex items-center text-base font-medium text-destructive">
+                  <XCircle className="h-4 w-4 mr-2 text-destructive" />
+                  Transaction Failed
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowError(false)}
+                >
+                  <XCircle className="h-4 w-4 text-destructive" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="p-3 rounded-md">
+                  <p className="text-sm text-destructive">{error}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </div>
