@@ -51,7 +51,7 @@ export default function ProgramSetupWizard({
   };
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] w-full max-w-5xl flex-col p-6">
+    <div className="mx-auto flex h-full w-full max-w-5xl flex-col p-6">
       <div className="mb-4">
         <Stepper value={currentStep} className="items-start gap-4">
           {steps.map(({ step, title, icon }) => {
