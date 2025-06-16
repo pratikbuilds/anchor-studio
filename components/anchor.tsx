@@ -11,7 +11,7 @@ import {
   numberWithSeparator,
   snakeToTitleCase,
 } from "@/utils/index";
-import { Cluster, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import useProgramStore from "@/lib/stores/program-store";
 import { Fragment, ReactNode, useState } from "react";
 import {
