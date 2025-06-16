@@ -2,7 +2,12 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RefreshCw, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  RefreshCw,
+  ExternalLink,
+  AlertTriangle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransactionInstruction } from "@solana/web3.js";
 import useProgramStore from "@/lib/stores/program-store";
@@ -343,17 +348,24 @@ function TransactionDetails() {
     error,
   } = useTransaction(signature);
 
-  // Extract transaction details
+  // Show warning if program is not initialized
+  const showProgramWarning = !program;
+
   const meta = transactionData?.raw?.meta;
   const logs = meta?.logMessages;
   const computeUnits = meta?.computeUnitsConsumed;
   const fee = meta?.fee;
   const transactionError = meta?.err;
   const instructions = transactionData?.raw?.transaction?.instructions;
-  const anchorName =
-    instructions && program
-      ? getAnchorNameForInstruction(instructions[0], program)
-      : undefined;
+  const filteredInstructions =
+    instructions?.filter((ix) => {
+      if (ix.programId.toString() === program?.programId.toString()) {
+        return ix;
+      }
+    }) || [];
+  console.log("filteredInstructions", filteredInstructions);
+  console.log("instructions", instructions);
+  console.log("program", program);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -366,11 +378,11 @@ function TransactionDetails() {
   };
 
   const renderTxStatus = () => {
-    // Simplified logic: if we have transaction data, consider it successful
-    return transactionData ? (
-      <Badge variant="success">Success</Badge>
+    // Show 'Error' if there is an error, otherwise 'Success'
+    return transactionData?.raw.meta?.err ? (
+      <Badge variant="destructive">Error</Badge>
     ) : (
-      <Badge variant="destructive">Failed</Badge>
+      <Badge variant="success">Success</Badge>
     );
   };
 
@@ -457,6 +469,15 @@ function TransactionDetails() {
 
   return (
     <div className="container max-w-5xl mx-auto py-8 space-y-4">
+      {showProgramWarning && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-yellow-500/40 bg-yellow-400/10 px-5 py-3 shadow-sm">
+          <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0" />
+          <span className="text-yellow-200 font-medium text-base">
+            Program object did not get initialized.{" "}
+            <span className="font-normal">Please connect your wallet.</span>
+          </span>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-4">
         <Button variant="ghost" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
