@@ -34,10 +34,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { IdlField, IdlTypeDef } from "@coral-xyz/anchor/dist/cjs/idl";
 
 // Copy button component
-const CopyButton = ({ text }: { text: string }) => {
+const CopyButton = ({
+  text,
+  alwaysVisible = false,
+  className,
+}: {
+  text: string;
+  alwaysVisible?: boolean;
+  className?: string;
+}) => {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
@@ -51,7 +65,11 @@ const CopyButton = ({ text }: { text: string }) => {
     <Button
       variant="ghost"
       size="icon"
-      className="h-6 w-6 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      className={cn(
+        "h-6 w-6 text-muted-foreground hover:text-foreground transition-opacity",
+        !alwaysVisible && "opacity-0 group-hover:opacity-100",
+        className
+      )}
       onClick={copyToClipboard}
     >
       {copied ? (
@@ -160,16 +178,56 @@ export function AccountTable({ data, accountType }: AccountTableProps) {
           cell: ({ getValue }) => {
             const value = getValue();
             const displayValue =
-              typeof value === "object" ? JSON.stringify(value) : String(value);
+              typeof value === "object" && value !== null
+                ? JSON.stringify(value, null, 2)
+                : String(value ?? "");
 
-            return fieldType === "pubkey" ? (
-              <div className="flex items-center gap-2 group">
-                <span className="font-mono text-sm max-w-[200px] truncate">
-                  {displayValue}
-                </span>
-                <CopyButton text={displayValue} />
-              </div>
-            ) : (
+            if (fieldType === "pubkey") {
+              return (
+                <div className="flex items-center gap-2 group">
+                  <span className="font-mono text-sm max-w-[200px] truncate">
+                    {displayValue}
+                  </span>
+                  <CopyButton text={displayValue} />
+                </div>
+              );
+            }
+
+            if (displayValue.length > 50) {
+              return (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="max-w-[200px] truncate cursor-pointer">
+                        {displayValue}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      className="border-none bg-transparent p-0 shadow-none"
+                      side="bottom"
+                      align="start"
+                    >
+                      <div className="relative max-w-sm rounded-lg border bg-background text-foreground shadow-md">
+                        <div className="absolute top-2 right-4">
+                          <CopyButton
+                            text={displayValue}
+                            alwaysVisible
+                            className="hover:bg-transparent"
+                          />
+                        </div>
+                        <div className="max-h-60 overflow-y-auto p-4 pr-12 text-xs">
+                          <pre className="whitespace-pre-wrap break-all">
+                            {displayValue}
+                          </pre>
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            }
+
+            return (
               <div className="max-w-[200px] group relative">
                 <div className="truncate">{displayValue}</div>
               </div>
