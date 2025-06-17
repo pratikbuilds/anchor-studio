@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Explore, interact with, and debug Solana Anchor programs visually.</b><br/>
-  Upload your Anchor IDL, connect your wallet, and get instant insights into your program's accounts, instructions, and transactions—all in a beautiful
+  Upload your Anchor IDL, connect your wallet, and get instant insights into your program's accounts, instructions, and transactions.
 </p>
 
 ---
