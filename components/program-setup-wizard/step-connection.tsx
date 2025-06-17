@@ -131,6 +131,18 @@ export default function StepConnection({
                   </SelectContent>
                 </Select>
 
+                {selectedRpc === "mainnet-beta" ? (
+                  <p className="text-xs text-amber-500 px-1 pt-1">
+                    It is not recommended to use the default Mainnet RPC. Please
+                    use a custom RPC for a better experience.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground px-1 pt-1">
+                    You can use custom RPCs by selecting "Custom RPC URL" from
+                    the list.
+                  </p>
+                )}
+
                 {(showCustomRpcInput || selectedRpc === "custom") && (
                   <form
                     onSubmit={handleCustomRpcSubmit}

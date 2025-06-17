@@ -18,8 +18,8 @@ export interface RpcEndpoint {
 export const RPC_OPTIONS: ReadonlyArray<RpcEndpoint> = [
   {
     value: "mainnet-beta",
-    label: "Mainnet Beta",
-
+    label: "Mainnet Beta (Not Recommended)",
+    // Note: It's not recommended to use this RPC for production applications
     url: `https://mainnet.helius-rpc.com/?api-key=${
       process.env.NEXT_PUBLIC_HELIUS_API_KEY || ""
     }`,
