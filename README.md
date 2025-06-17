@@ -50,10 +50,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### 🎥 Demo Video
 
 <p align="center">
-  <iframe src="https://www.loom.com/embed/18e6efbaec154f1db56ec8498502aa22?sid=d862b3d7-9a83-411c-a752-0878a84e794b" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen width="600" height="340"></iframe>
+  <a href="https://www.loom.com/share/18e6efbaec154f1db56ec8498502aa22?sid=d862b3d7-9a83-411c-a752-0878a84e794b" target="_blank">
+    <img src="https://cdn.loom.com/sessions/thumbnails/18e6efbaec154f1db56ec8498502aa22-with-play.gif" alt="Watch the demo" width="600" />
+  </a>
 </p>
-
-> _Add screenshots here to showcase the dashboard, account explorer, and transaction viewer!_
 
 ---
 
