@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useJsonStore } from "@/lib/store";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { AnimatedButton } from "@/components/ui/animated-button";
 
 export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
   const [activeTab, setActiveTab] = useState<"upload" | "editor">("editor");
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { isValid, setJsonData } = useJsonStore();
   const { isInitialized, programDetails, reset } = useProgramStore();
@@ -18,75 +20,113 @@ export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
   // console.log("isInitialized", isInitialized);
   // console.log("programDetails", programDetails);
 
-  const triggerFileInput = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const fileInput = document.getElementById(
-      "json-upload"
-    ) as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
-    }
-  };
+  const processJsonFile = useCallback(
+    (file: File) => {
+      if (!file) return;
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Check file size (limit to 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(
-        "File too large. Please upload a JSON file smaller than 5MB.",
-        {
-          description: "Large files may cause performance issues.",
-          duration: 5000,
-        }
-      );
-      return;
-    }
-
-    // Check file type
-    if (!file.name.endsWith(".json") && file.type !== "application/json") {
-      toast.error("Invalid file type. Please upload a JSON file.", {
-        description: "Only .json files are supported.",
-        duration: 3000,
-      });
-      return;
-    }
-
-    const reader = new FileReader();
-    toast.loading("Uploading JSON file...", { id: "upload-json" });
-
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        // Validate JSON before setting
-        JSON.parse(content);
-        setJsonData(content);
-        setActiveTab("editor");
-        toast.success("JSON file uploaded successfully", {
-          id: "upload-json",
-          description: `File: ${file.name}`,
+      if (!file.name.endsWith(".json") && file.type !== "application/json") {
+        toast.error("Invalid file type. Please upload a JSON file.", {
+          description: "Only .json files are supported.",
           duration: 3000,
         });
-      } catch (error) {
-        toast.error("Invalid JSON file", {
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(
+          "File too large. Please upload a JSON file smaller than 5MB.",
+          {
+            description: "Large files may cause performance issues.",
+            duration: 5000,
+          }
+        );
+        return;
+      }
+
+      const reader = new FileReader();
+      toast.loading("Uploading JSON file...", { id: "upload-json" });
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          const jsonData = JSON.parse(content);
+
+          console.log("Uploaded JSON data:", jsonData);
+
+          setJsonData(content);
+          setActiveTab("editor");
+          toast.success("JSON file uploaded successfully", {
+            id: "upload-json",
+            description: `File: ${file.name}`,
+            duration: 3000,
+          });
+        } catch (error) {
+          toast.error("Invalid JSON file", {
+            id: "upload-json",
+            description:
+              error instanceof Error
+                ? error.message
+                : "The file contains invalid JSON syntax.",
+            duration: 4000,
+          });
+        }
+      };
+
+      reader.onerror = () => {
+        toast.error("Failed to read file", {
           id: "upload-json",
-          description: "The file contains invalid JSON syntax.",
+          description: "There was an error reading the file. Please try again.",
           duration: 4000,
         });
+      };
+
+      reader.readAsText(file);
+    },
+    [setJsonData]
+  );
+
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        processJsonFile(file);
       }
-    };
+      if (event.target) {
+        event.target.value = "";
+      }
+    },
+    [processJsonFile]
+  );
 
-    reader.onerror = () => {
-      toast.error("Failed to read file", {
-        id: "upload-json",
-        description: "There was an error reading the file. Please try again.",
-        duration: 4000,
-      });
-    };
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setIsDragOver(false);
+      const file = event.dataTransfer.files?.[0];
+      if (file) {
+        processJsonFile(file);
+      }
+    },
+    [processJsonFile]
+  );
 
-    reader.readAsText(file);
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragOver(true);
   };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const openFileDialog = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    fileInputRef.current?.click();
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -147,19 +187,23 @@ export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
             </div>
             <div className="p-6 flex-1">
               <div
-                className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-primary/20 bg-primary/5 p-12 transition-colors hover:border-primary/30 hover:bg-primary/10 cursor-pointer"
-                onClick={(e) =>
-                  triggerFileInput(
-                    e as unknown as React.MouseEvent<HTMLButtonElement>
-                  )
-                }
+                className={`flex h-full flex-col items-center justify-center rounded-lg border border-dashed p-12 transition-colors cursor-pointer ${
+                  isDragOver
+                    ? "border-primary/50 bg-primary/20"
+                    : "border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10"
+                }`}
+                onClick={openFileDialog}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
               >
                 <input
                   type="file"
                   id="json-upload"
-                  accept=".json"
+                  accept=".json,application/json"
                   className="hidden"
-                  onChange={handleFileUpload}
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
                 />
                 <div className="mb-4 rounded-full bg-primary/10 p-3">
                   <FileJson className="h-8 w-8 text-primary" />
@@ -170,11 +214,7 @@ export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
                 <div className="mb-6 text-sm text-muted-foreground">
                   Support for .json files only, up to 5MB
                 </div>
-                <Button
-                  onClick={triggerFileInput}
-                  variant="outline"
-                  className="gap-2"
-                >
+                <Button variant="outline" className="gap-2 pointer-events-none">
                   <UploadIcon className="h-4 w-4" />
                   Select JSON File
                 </Button>
