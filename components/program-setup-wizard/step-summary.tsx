@@ -29,10 +29,6 @@ export default function StepSummary({
   const { initialize, isInitialized, error, programDetails } =
     useProgramStore();
 
-  console.log("error", error);
-  console.log("isInitialized", isInitialized);
-  console.log("programDetails", programDetails);
-
   const { getCurrentRpcUrl, getCurrentRpcDisplayName } = useRpcStore();
   const wallet = useAnchorWallet();
 

@@ -26,7 +26,6 @@ export const getAccountData = async <T extends anchor.Idl>(
   const data = await program.account[lowerCaseAccountName].fetchNullable(
     accountKeys
   );
-  console.log("Single data", data);
   return data;
 };
 

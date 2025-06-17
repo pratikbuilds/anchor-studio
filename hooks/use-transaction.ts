@@ -34,7 +34,6 @@ export function useTransaction(signature: string | undefined) {
           maxSupportedTransactionVersion: 0, // Ensures we get a VersionedTransaction
         });
 
-      console.log("response", response);
       if (response !== null) {
         const versionedTx = response.transaction;
         const meta = response.meta;

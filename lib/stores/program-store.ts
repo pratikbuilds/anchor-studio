@@ -185,15 +185,15 @@ const useProgramStore = create<ProgramState>()(
             connection: null,
             programDetails: null,
           });
-          console.log("[program-store] Resetting state");
+
           // Create connection
-          console.log("[program-store] Creating connection", rpcUrl);
+
           const connection = new Connection(rpcUrl, {
             ...DEFAULT_CONNECTION_CONFIG,
           });
 
           // Create provider
-          console.log("[program-store] Creating provider", commitment);
+
           const provider = new AnchorProvider(connection, wallet, {
             preflightCommitment: commitment,
             commitment,
@@ -201,12 +201,12 @@ const useProgramStore = create<ProgramState>()(
 
           // Create program instance directly with the provider
           // This approach worked in the original implementation
-          console.log("[program-store] Creating program instance", idl);
+
           const program = new Program(idl, provider);
-          console.log("[program-store] Program instance", program);
+
           // Determine cluster from RPC URL
           const cluster = getClusterFromRpcUrl(rpcUrl);
-          console.log("[program-store] Cluster", cluster);
+
           // Create program details
           const programDetails: ProgramDetails = {
             programId: program.programId.toString(),
@@ -268,7 +268,6 @@ const useProgramStore = create<ProgramState>()(
 
       reinitialize: async (wallet: AnchorWallet) => {
         const { programDetails, isReinitializing } = get();
-        console.log("reinitialize programDetails", programDetails);
 
         if (!programDetails) {
           console.log(

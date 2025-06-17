@@ -32,7 +32,7 @@ const getAccountPubkeys = async <T extends anchor.Idl>(
       filters: [filter],
     }
   );
-  console.log("accounts from getAccountPubkeys", accounts);
+
   return accounts.map((acc) => acc.pubkey.toBase58());
 };
 

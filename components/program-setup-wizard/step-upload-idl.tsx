@@ -6,8 +6,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { JsonEditor } from "@/components/json-editor";
 import { ArrowRight, CodeIcon, FileJson, UploadIcon } from "lucide-react";
-import useProgramStore from "@/lib/stores/program-store";
-import { AnimatedButton } from "@/components/ui/animated-button";
 
 export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
   const [activeTab, setActiveTab] = useState<"upload" | "editor">("editor");
@@ -15,10 +13,6 @@ export default function StepUploadIdl({ onNext }: { onNext: () => void }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { isValid, setJsonData } = useJsonStore();
-  const { isInitialized, programDetails, reset } = useProgramStore();
-
-  // console.log("isInitialized", isInitialized);
-  // console.log("programDetails", programDetails);
 
   const processJsonFile = useCallback(
     (file: File) => {
