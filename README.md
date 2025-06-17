@@ -2,7 +2,7 @@
   <img src="public/favicon.png" alt="Anchor Studio Logo" width="96" height="96" />
 </p>
 
-<h1 align="center">Anchor Studio: IDL UI</h1>
+<h1 align="center">Anchor Studio</h1>
 
 <p align="center">
   <b>Explore, interact with, and debug Solana Anchor programs visually.</b><br/>
