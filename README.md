@@ -49,7 +49,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### 🎥 Demo Video
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/18e6efbaec154f1db56ec8498502aa22?sid=d1d38063-4431-4250-a2ca-731a3efe9c96" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+[Watch the demo video on Loom](https://www.loom.com/share/18e6efbaec154f1db56ec8498502aa22?sid=72bea90f-0d08-48f7-a25b-5db4ef923f4a)
 
 ---
 
