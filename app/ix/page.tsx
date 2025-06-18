@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useWallet } from "@jup-ag/wallet-adapter";
 import { useCallback } from "react";
 import { PublicKey } from "@solana/web3.js";
+import { BN } from "@coral-xyz/anchor";
 import {
   Loader2,
   Code,
@@ -109,15 +110,43 @@ export default function InstructionBuilderPage() {
     }
   }, [initialSelectedIx, selectedIx]);
 
+  const processArgs = useCallback(
+    (currentArgs: Record<string, any>, ix: IdlInstruction) => {
+      return ix.args.map((arg) => {
+        const value = currentArgs[arg.name];
+        if (typeof arg.type === "string") {
+          switch (arg.type) {
+            case "u8":
+            case "i8":
+            case "u16":
+            case "i16":
+            case "u32":
+            case "i32":
+            case "u64":
+            case "i64":
+            case "u128":
+            case "i128":
+            case "u256":
+            case "i256":
+              return value ? new BN(value) : new BN(0);
+            default:
+              return value;
+          }
+        }
+        return value;
+      });
+    },
+    []
+  );
+
   // Fetch resolved pubkeys using method builder
   const fetchResolvedPubkeys = useCallback(async () => {
     if (!program || !instruction || !publicKey) return;
 
     try {
       // Create method builder with current args
-      const methodBuilder = program.methods[instruction.name](
-        ...Object.values(args)
-      );
+      const processedArgs = processArgs(args, instruction);
+      const methodBuilder = program.methods[instruction.name](...processedArgs);
 
       // Get resolved pubkeys
       const resolvedPubkeys = await methodBuilder.pubkeys();
@@ -152,7 +181,7 @@ export default function InstructionBuilderPage() {
     } catch (error) {
       console.warn("Failed to resolve pubkeys:", error);
     }
-  }, [program, instruction, args, publicKey]);
+  }, [program, instruction, args, publicKey, processArgs]);
 
   // Auto-populate accounts when instruction or args change
   useEffect(() => {
@@ -204,7 +233,7 @@ export default function InstructionBuilderPage() {
 
     try {
       // 1. Prepare arguments
-      const processedArgs = instruction.args.map((arg) => args[arg.name]);
+      const processedArgs = processArgs(args, instruction);
 
       // 2. Create method builder with args
       const methodBuilder = program.methods[instruction.name](...processedArgs);
@@ -234,7 +263,9 @@ export default function InstructionBuilderPage() {
       }
 
       // 5. Send transaction with resolved accounts
-      const txSignature = await methodBuilder.accounts(accountsObject).rpc();
+      const txSignature = await methodBuilder.accounts(accountsObject).rpc({
+        skipPreflight: true,
+      });
       console.log("Transaction sent with signature:", txSignature);
       setResult({ signature: txSignature });
       setShowResult(true);
@@ -627,8 +658,25 @@ export default function InstructionBuilderPage() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="p-3 rounded-md">
-                  <p className="text-sm text-destructive">{error}</p>
+                <div className="p-3 bg-background rounded-md border">
+                  <div className="flex items-start justify-between gap-2">
+                    <code className="text-xs break-all text-destructive">
+                      {error}
+                    </code>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 flex-shrink-0"
+                      onClick={() => {
+                        if (error) {
+                          navigator.clipboard.writeText(error);
+                          toast.success("Error copied to clipboard");
+                        }
+                      }}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

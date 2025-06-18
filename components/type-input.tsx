@@ -25,8 +25,9 @@ export function TypeInput({
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (val === "" || /^\d+$/.test(val)) {
-      onChange(val === "" ? "" : Number(val));
+    // Allow empty, or a valid number string (including negative for signed types)
+    if (val === "" || /^-?\d*$/.test(val)) {
+      onChange(val);
     }
   };
 
@@ -85,7 +86,6 @@ export function TypeInput({
             <Input
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
               value={value ?? ""}
               onChange={handleNumberChange}
               placeholder={placeholder || `Enter ${type} value...`}

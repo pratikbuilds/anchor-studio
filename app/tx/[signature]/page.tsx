@@ -608,14 +608,17 @@ function TransactionDetails() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {instructions && program ? (
+          {instructions && program && filteredInstructions.length > 0 ? (
             <AnchorDetails
               ix={filteredInstructions[0]}
               anchorProgram={program}
             />
           ) : (
             <div className="p-4 text-center text-muted-foreground">
-              <p>No instruction data available</p>
+              <p>
+                No instructions found for the current program. This might be
+                because you are viewing a transaction for a different program.
+              </p>
             </div>
           )}
         </CardContent>
