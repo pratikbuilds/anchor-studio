@@ -151,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/" className="flex items-center gap-3">
                 <img
-                  src="/favicon.png"
+                  src="/icon.png"
                   alt="Anchor Studio Logo"
                   className="h-12 w-12 object-contain"
                 />

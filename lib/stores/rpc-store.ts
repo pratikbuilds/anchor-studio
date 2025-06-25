@@ -20,9 +20,7 @@ export const RPC_OPTIONS: ReadonlyArray<RpcEndpoint> = [
     value: "mainnet-beta",
     label: "Mainnet Beta (Not Recommended)",
     // Note: It's not recommended to use this RPC for production applications
-    url: `https://mainnet.helius-rpc.com/?api-key=${
-      process.env.NEXT_PUBLIC_HELIUS_API_KEY || ""
-    }`,
+    url: `https://api.mainnet-beta.solana.com`,
   },
   { value: "devnet", label: "Devnet", url: "https://api.devnet.solana.com" },
   { value: "localnet", label: "localnet", url: "http://127.0.0.1:8899" },

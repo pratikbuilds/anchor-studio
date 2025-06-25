@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.png" alt="Anchor Studio Logo" width="96" height="96" />
+  <img src="public/icon.png" alt="Anchor Studio Logo" width="96" height="96" />
 </p>
 
 <h1 align="center">Anchor Studio</h1>
